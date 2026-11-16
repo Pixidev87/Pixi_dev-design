@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixi web &amp; webdesign — lépésről lépésre terv</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text: #1e1b18;
+    --muted: #6b645c;
+    --accent: #c2410c;
+    --accent-soft: #ffedd5;
+    --border: #e7e2da;
+    --ok: #15803d;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161412;
+      --surface: #1f1c19;
+      --text: #f3eee8;
+      --muted: #a39b91;
+      --accent: #fb923c;
+      --accent-soft: #3a2a1d;
+      --border: #332e28;
+      --ok: #4ade80;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161412;
+    --surface: #1f1c19;
+    --text: #f3eee8;
+    --muted: #a39b91;
+    --accent: #fb923c;
+    --accent-soft: #3a2a1d;
+    --border: #332e28;
+    --ok: #4ade80;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 .5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  h3 { font-size: 1.05rem; margin: 1.5rem 0 .4rem; }
+  .sub { color: var(--muted); margin: 0 0 1.5rem; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .meta { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0 0; }
+  .pill {
+    font-size: .8rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: .2rem .6rem;
+    border-radius: 999px;
+  }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .88rem;
+  }
+  code { background: var(--accent-soft); padding: .1rem .35rem; border-radius: 4px; }
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    overflow-x: auto;
+  }
+  ul.steps { list-style: none; padding: 0; margin: .5rem 0; }
+  ul.steps li {
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+    padding: .45rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  ul.steps li:last-child { border-bottom: none; }
+  ul.steps input[type="checkbox"] {
+    margin-top: .35rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--ok);
+    flex-shrink: 0;
+  }
+  .verify { color: var(--muted); font-size: .92rem; margin: .15rem 0 0 1.6rem; }
+  .verify strong { color: var(--ok); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: .5rem 0; font-size: .95rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+  .wrap { overflow-x: auto; }
+  .question {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    padding: .8rem 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+  }
+  .question strong { color: var(--accent); }
+  ol.focus { padding-left: 1.2rem; }
+  ol.focus li { margin: .35rem 0; }
+  .toc { columns: 2; gap: 2rem; padding-left: 1.1rem; }
+  .toc li { break-inside: avoid; margin: .25rem 0; }
+  a { color: var(--accent); }
+  @media (max-width: 600px) { .toc { columns: 1; } h1 { font-size: 1.6rem; } }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Pixi web &amp; webdesign</h1>
+<p class="sub">Lépésről lépésre implementációs terv — a jóváhagyott tervdokumentum alapján</p>
+
+<div class="card">
+  <p><strong>Cél:</strong> a közös weboldal elkészítése három résszel: portfólió, igényfelmérő űrlap és kipróbálható AI-demó, regisztrációhoz kötve, összesen 5 használattal regisztrációnként.</p>
+  <p><strong>Architektúra:</strong> Laravel backend (API, adatmentés, Claude-hívás), React frontend, a párod designja alapján.</p>
+  <p><strong>Technológia:</strong> Laravel, React, Claude API, e-mail-küldés, MySQL.</p>
+  <p><strong>Forrás:</strong> <code>kozos-weboldal-tervdokumentum.md</code></p>
+  <div class="meta">
+    <span class="pill">8 fő szakasz</span>
+    <span class="pill">Minden lépésnél visszakérdezés</span>
+  </div>
+</div>
+
+<h2>Tartalomjegyzék</h2>
+<ol class="toc">
+  <li><a href="#s0">0. Globális megkötések</a></li>
+  <li><a href="#s1">1. Design és vázlat</a></li>
+  <li><a href="#s2">2. Laravel alap</a></li>
+  <li><a href="#s3">3. Igényfelmérő űrlap (backend)</a></li>
+  <li><a href="#s4">4. Regisztráció és e-mail</a></li>
+  <li><a href="#s5">5. Demó és 5-használat-keret</a></li>
+  <li><a href="#s6">6. React frontend</a></li>
+  <li><a href="#s7">7. Portfólió</a></li>
+  <li><a href="#s8">8. Minőség és indítás</a></li>
+</ol>
+
+<h2 id="s0">0. Globális megkötések</h2>
+<div class="card">
+<ul>
+  <li>Vállalkozás neve: <strong>Pixi web &amp; webdesign</strong></li>
+  <li>Demó: <strong>regisztrációnként összesen 5 használat</strong>, a regisztrációtól számítva, nem napi keret</li>
+  <li>Demó csak regisztrációval és e-mail-címmel érhető el</li>
+  <li>Ajánlatkérés után a látogató e-mail-visszaigazolást kap</li>
+  <li>Telefonszám és foglalási lehetőség a főoldalon jelenik meg</li>
+  <li>Claude API-kulcs kizárólag a backenden, soha nem a böngészőben</li>
+  <li>Akadálymentes, mobilbarát, prémium minőségű felület</li>
+</ul>
+</div>
+
+<h2 id="s1">1. Design és vázlat</h2>
+<p class="sub">Felelős: párod. Ebből a szakaszból lesz a frontend alap.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox"><div>Főoldal vázlat: hero, három szolgáltatás, portfólió-kiemelés, telefon/foglalás blokk, ajánlatkérő gomb<div class="verify"><strong>Kész, ha:</strong> a párod jóváhagyja a vázlatot.</div></div></li>
+  <li><input type="checkbox"><div>Demó-oldal vázlata: szabad szöveges mező, eredménykártya, „ajánlatot kérek” gomb<div class="verify"><strong>Kész, ha:</strong> a mobilnézet is elkészült.</div></div></li>
+  <li><input type="checkbox"><div>Igényfelmérő űrlap vázlata: név, e-mail, rövid leírás, és az előre kitöltött mező a demó eredményéből<div class="verify"><strong>Kész, ha:</strong> minden mező és hibaállapot látható.</div></div></li>
+  <li><input type="checkbox"><div>Design-rendszer: színek, betűtípus, távolságok, gombok (<code>design-system</code> skill)<div class="verify"><strong>Kész, ha:</strong> egy dokumentumban rögzítve, és a React-ben tokenként használható.</div></div></li>
+  <li><input type="checkbox"><div>Szövegek véglegesítése (<code>ux-copy</code> skill)<div class="verify"><strong>Kész, ha:</strong> minden gomb és hibaüzenet kész szöveggel rendelkezik.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> a párod jóváhagyja a főoldal vázlatát, vagy van változtatási kérés, mielőtt továbblépünk a backendre?</div>
+
+<h2 id="s2">2. Laravel alap</h2>
+<p class="sub">Felelős: te. Cél: futó Laravel projekt, adatbázissal és üres API-val.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox" checked><div>Laravel projekt létrehozása Sail-lel (<code>laravel new pixi-web</code>)<div class="verify"><strong>Kész, ha:</strong> <code>sail up -d</code> után a főoldal betöltődik.</div></div></li>
+  <li><input type="checkbox" checked><div>MySQL és Redis beállítása, <code>.env</code> konfiguráció<div class="verify"><strong>Kész, ha:</strong> <code>sail artisan migrate</code> hiba nélkül lefut.</div></div></li>
+  <li><input type="checkbox" checked><div>Alap réteg: Controller → Service → Model, Form Request és API Resource rétegek<div class="verify"><strong>Kész, ha:</strong> egy példa végpont működik. 2026-11-16: a /api/v1/status és a Controller → Service felosztás kész; Model, Form Request és API Resource a 3. szakasszal elkészült.</div></div></li>
+  <li><input type="checkbox" checked><div>Tesztkörnyezet (<code>pest</code> vagy PHPUnit) és az első teszt<div class="verify"><strong>Kész, ha:</strong> <code>sail artisan test</code> zöld.</div></div></li>
+  <li><input type="checkbox" checked><div>Git repo és első commit<div class="verify"><strong>Kész, ha:</strong> a repo elérhető, a <code>.env</code> ki van zárva.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> a Laravel projektet Sail-lel indítsuk, vagy valami mást használnál (például Herd)? A dokumentum szerint Sail van a gépeden.</div>
+
+<h2 id="s3">3. Igényfelmérő űrlap (backend)</h2>
+<p class="sub">Felelős: te. Cél: az ajánlatkérés mentése és visszaigazolás.</p>
+
+<h3>Adatmodell</h3>
+<div class="wrap">
+<table>
+  <tr><th>Mező</th><th>Típus</th><th>Megjegyzés</th></tr>
+  <tr><td><code>name</code></td><td>string</td><td>kötelező</td></tr>
+  <tr><td><code>email</code></td><td>string</td><td>kötelező, érvényes e-mail</td></tr>
+  <tr><td><code>description</code></td><td>text</td><td>kötelező, rövid leírás</td></tr>
+  <tr><td><code>demo_session_id</code></td><td>unsigned bigint, nullable; külső kulcs az 5. szakaszban</td><td>előkészített mező; a végpont egyelőre nem fogad el demóazonosítót</td></tr>
+  <tr><td><code>status</code></td><td>PHP backed enum: new, processed, sent</td><td>PHP backed enum</td></tr>
+</table>
+</div>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox" checked><div>Migráció: <code>inquiries</code> tábla létrehozása<div class="verify"><strong>Kész, ha:</strong> a tábla létrejött a migrációval.</div></div></li>
+  <li><input type="checkbox" checked><div>Teszt írása: érvénytelen e-mail esetén 422-es válasz<div class="verify"><strong>Kész, ha:</strong> a teszt először piros, majd a kód után zöld.</div></div></li>
+  <li><input type="checkbox" checked><div>Form Request osztály a validációhoz<div class="verify"><strong>Kész, ha:</strong> a teszt zöld.</div></div></li>
+  <li><input type="checkbox" checked><div>Service réteg: ajánlat mentése, állapot beállítása<div class="verify"><strong>Kész, ha:</strong> a mentés teszttel lefedett.</div></div></li>
+  <li><input type="checkbox" checked><div>API végpont: <code>POST /api/v1/inquiries</code>, API Resource válasszal<div class="verify"><strong>Kész, ha:</strong> érvényes adatra 201-es válasz jön.</div></div></li>
+  <li><input type="checkbox" checked><div>Visszaigazoló e-mail küldése (Mailable)<div class="verify"><strong>Kész, ha:</strong> a teszt-mailbox megkapja az e-mailt.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> a visszaigazoló e-mail szövege magyar legyen, és a „Pixi web &amp; webdesign” név szerepeljen a feladón?</div>
+
+<div class="verify"><strong>2026-11-16 – 3. szakasz kész.</strong> 21 teszt / 131 assertion sikeres; Pint és Compose ellenőrzés rendben. Az inquiries migráció lefutott. A POST /api/v1/inquiries végpontot Nginxen is kipróbáltuk; az #1 helyi tesztajánlat visszaigazolása megérkezett a Mailpit postaládába (localhost:8026). A worker fut. A mentés és a levélfeladat egy tranzakció, SMTP-hibánál újrapróbálkozás történik. A 201 mentést és sorba állítást jelent. A demó külső kulcsa és jogosultságellenőrzése az 5. szakasz feladata; éles SMTP és frontend később következik.</div>
+<p><strong>Git-állapot:</strong> a 3. szakasz kész és tesztelt. Zoli kifejezett engedélyével commitolva és feltöltve a GitHub main ágára: <code>6897a00</code> – feat: add validated inquiries with reliable queued confirmations. A push sikeres (143b33a → 6897a00).</p>
+<h3>A Controller kódja</h3>
+<pre><code>&lt;?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreInquiryRequest;
+use App\Http\Resources\InquiryResource;
+use App\Services\InquiryService;
+
+class InquiryController extends Controller
+{
+    public function __invoke(StoreInquiryRequest $request, InquiryService $service): InquiryResource
+    {
+        return new InquiryResource($service-&gt;create($request-&gt;safe()-&gt;only([
+            &#x27;name&#x27;, &#x27;email&#x27;, &#x27;description&#x27;,
+        ])));
+    }
+}
+</code></pre>
+
+<h2 id="s4">4. Regisztráció és e-mail</h2>
+<p class="sub">Felelős: te. Cél: a demó csak regisztrált, megerősített e-mail-címmel legyen elérhető.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox" checked><div>Regisztrációs végpont: név, e-mail, jelszó<div class="verify"><strong>Kész, ha:</strong> az új felhasználó létrejön és a teszt zöld.</div></div></li>
+  <li><input type="checkbox" checked><div>E-mail-megerősítés (aláírt link, lejárat)<div class="verify"><strong>Kész, ha:</strong> lejárt vagy hibás link elutasításra kerül.</div></div></li>
+  <li><input type="checkbox" checked><div>Bejelentkezés (Sanctum tokennel)<div class="verify"><strong>Kész, ha:</strong> a védett végpont csak tokennel érhető el.</div></div></li>
+  <li><input type="checkbox" checked><div>Demó-kvóta mező a felhasználóhoz: <code>demo_uses_left</code>, kezdő érték 5<div class="verify"><strong>Kész, ha:</strong> új regisztrációnál az érték pontosan 5.</div></div></li>
+</ul>
+
+<div class="verify"><strong>Döntés:</strong> név, e-mail, jelszó és jelszó-megerősítés szükséges; a demókeretet és a megerősítési állapotot a szerver kezeli.</div>
+
+<div class="verify"><strong>2026-11-16 – 4. szakasz kész.</strong> 52 teszt / 306 assertion sikeres, Pint és Compose rendben. Sanctum 4.4.0, bearer token 24 órás lejárattal; kijelentkezés visszavonja az aktuális tokent. A levél aláírt linkje 60 percig érvényes; hibás/lejárt link 403. A még érvényes link ismételt használata idempotens siker. A magyar levelet a meglévő adatbázisos levélsor és Docker worker küldi. A regisztráció új fióknak pontosan 5 felhasználást ad; belépéskor nincs újratöltés.</div>
+<p><strong>Végpontok:</strong> POST /api/v1/register, POST /api/v1/login, POST /api/v1/logout, GET /api/v1/me, POST /api/v1/email/verification-notification és GET /api/v1/email/verify/{user}/{hash}. A /me érvényes tokent és megerősített e-mailt kér. Kéréskorlátozás védi a regisztrációt, belépést és levélküldést.</p>
+<p><strong>Teljes helyi próba:</strong> Nginx → regisztráció (201) → Mailpit → megerősítés (200) → védett végpont (200) → kijelentkezés (204) → visszavont token (401). Megerősítés előtt a védett végpont 403-at ad. A helyi migrációk lefutottak, a worker újraindítva.</p>
+<p><strong>Git:</strong> megvalósítás <code>6da9f64</code>, main ágra feltöltve. A napló és a HTML-terv azonos tartalmú, verziózott másolatai a repository <code>docs/</code> mappájában is megtalálhatók.</p>
+<h3>A regisztráció lényegi kódja (tranzakción belül)</h3>
+<pre><code>$user = new User($data);
+$user-&gt;demo_uses_left = 5;
+$user-&gt;save();
+event(new Registered($user));</code></pre>
+<p><strong>Következő:</strong> 5. szakasz, demó és atomi kvótafogyasztás. Frontend és éles SMTP később következik.</p>
+
+<h2 id="s5">5. Demó és 5-használat-keret</h2>
+<p class="sub">Felelős: te. Ez a rész kerül legtöbb API-költségbe, ezért a keretnek szigorúnak kell lennie.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox"><div>Demó végpont: <code>POST /api/demo</code>, bejelentkezett felhasználóval<div class="verify"><strong>Kész, ha:</strong> bejelentkezés nélkül 401-es válasz jön.</div></div></li>
+  <li><input type="checkbox"><div>Kvóta-ellenőrzés teszttel: 5. használat után a következő 403-as válasz<div class="verify"><strong>Kész, ha:</strong> a teszt pontosan az 5. és 6. hívásnál vált.</div></div></li>
+  <li><input type="checkbox"><div>Kvóta csökkentése atomikusan (adatbázis-tranzakcióban), hogy párhuzamos hívásnál se lehessen túllépni<div class="verify"><strong>Kész, ha:</strong> párhuzamos teszttel is 5 a maximum.</div></div></li>
+  <li><input type="checkbox"><div>Claude-hívás a service rétegben, a kulcs a <code>.env</code>-ben<div class="verify"><strong>Kész, ha:</strong> a válasz rövid, strukturált összefoglaló.</div></div></li>
+  <li><input type="checkbox"><div>Hibakezelés: API-hiba esetén a kvóta nem fogy el<div class="verify"><strong>Kész, ha:</strong> hibás hívás után a <code>demo_uses_left</code> érték nem változik.</div></div></li>
+  <li><input type="checkbox"><div>A demó eredményének mentése, hogy az űrlap előre kitölthető legyen<div class="verify"><strong>Kész, ha:</strong> a <code>demo_session_id</code> az ajánlathoz csatolódik.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> ha egy regisztrált felhasználó már elhasználta az 5 próbálkozást, mit lásson? Egy üzenet az ajánlatkérő űrlapra irányítva, vagy más lehetőség?</div>
+
+<h2 id="s6">6. React frontend</h2>
+<p class="sub">Felelős: te, a párod designja szerint. Cél: a főoldal, a demó és az űrlap működik.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox"><div>React projekt (Vite), a design-rendszer tokenjeinek beépítése<div class="verify"><strong>Kész, ha:</strong> a főoldal a párod vázlata szerint renderelődik.</div></div></li>
+  <li><input type="checkbox"><div>Főoldal: hero, szolgáltatások, telefon/foglalás blokk<div class="verify"><strong>Kész, ha:</strong> mobilon is olvasható.</div></div></li>
+  <li><input type="checkbox"><div>Regisztrációs és bejelentkezési oldal<div class="verify"><strong>Kész, ha:</strong> hibaüzenet és betöltési állapot látszik.</div></div></li>
+  <li><input type="checkbox"><div>Demó oldal: szövegmező, eredménykártya, hátralévő próbálkozások száma<div class="verify"><strong>Kész, ha:</strong> 0 maradéknál a gomb letiltott és üzenet jelenik meg.</div></div></li>
+  <li><input type="checkbox"><div>Igényfelmérő űrlap, előre kitöltve a demó eredményéből<div class="verify"><strong>Kész, ha:</strong> elküldés után visszaigazolás jelenik meg.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> a React-et Vite-tal építsük, vagy Next.js-t használjunk? A tervben Vite szerepel, de ez a te döntésed.</div>
+
+<h2 id="s7">7. Portfólió</h2>
+<p class="sub">Felelős: közösen. Cél: egy valódi példa esettanulmányként.</p>
+
+<h3>Lépések</h3>
+<ul class="steps">
+  <li><input type="checkbox"><div>Esettanulmány-sablon: probléma → megoldás → eredmény<div class="verify"><strong>Kész, ha:</strong> a párod designjával egységes.</div></div></li>
+  <li><input type="checkbox"><div>Az első valódi példa kiválasztása (ugyanaz a probléma, mint a demóban)<div class="verify"><strong>Kész, ha:</strong> a példa szövege elkészült és jóváhagyott.</div></div></li>
+  <li><input type="checkbox"><div>Portfólió-lista és szűrés a főoldalon<div class="verify"><strong>Kész, ha:</strong> a főoldalról egy kattintással elérhető.</div></div></li>
+</ul>
+
+<div class="question"><strong>Kérdés:</strong> melyik valódi ügyfél- vagy bemutató-projekt legyen az első esettanulmány?</div>
+
+<h2 id="s8">8. Minőség és indítás</h2>
+<p class="sub">Felelős: közösen. Cél: a premium minőség ellenőrzése indulás előtt.</p>
+
+<h3>Ellenőrzések</h3>
+<ul class="steps">
+  <li><input type="checkbox"><div>Akadálymentesség (WCAG 2.1 AA) ellenőrzése (<code>accessibility-review</code> skill)<div class="verify"><strong>Kész, ha:</strong> nincs kritikus hiba.</div></div></li>
+  <li><input type="checkbox"><div>Design átnézése a párod által (<code>design-critique</code> skill)<div class="verify"><strong>Kész, ha:</strong> a párod jóváhagyja.</div></div></li>
+  <li><input type="checkbox"><div>Mobilnézet és lassú hálózat tesztelése<div class="verify"><strong>Kész, ha:</strong> a főoldal és a demó használható.</div></div></li>
+  <li><input type="checkbox"><div>Biztonság: rate limit, CSRF, API-kulcs csak szerveren<div class="verify"><strong>Kész, ha:</strong> a kulcs nem látszik a böngésző forrásában.</div></div></li>
+  <li><input type="checkbox"><div>Teljes folyamat végigtesztelése: regisztráció → e-mail → demó 5-ször → űrlap → visszaigazolás<div class="verify"><strong>Kész, ha:</strong> minden lépés hiba nélkül lefut (<code>verification-before-completion</code>).</div></div></li>
+  <li><input type="checkbox"><div>Éles indítás: domain, HTTPS, szerver<div class="verify"><strong>Kész, ha:</strong> az oldal éles címen elérhető.</div></div></li>
+</ul>
+
+<h3>Az öt legfontosabb szélső eset (felülvizsgálati fókusz)</h3>
+<ol class="focus">
+  <li>Párhuzamos demó-hívás a 4. használatnál: az 5 limit nem léphető túl.</li>
+  <li>Claude-hívás hibája: a kvóta ne fogyjon el.</li>
+  <li>Lejárt vagy módosított e-mail-megerősítő link: elutasítás; érvényes ismételt kattintás: idempotens siker.</li>
+  <li>Nagyon hosszú vagy üres szöveg a demóban: korlát és érthető visszajelzés.</li>
+  <li>Mobilon megszakadt elküldés az űrlapnál: az adat ne vesszen el.</li>
+</ol>
+
+<div class="verify"><strong>Aktuális állapot (2026-11-16):</strong> a 2., 3. és 4. szakasz elkészült. Következő: 5. szakasz. A külön demó-/űrlapdesign és a React frontend még hátravan.</div>
+
+</main>
+</body>
+</html>
