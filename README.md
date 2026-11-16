@@ -4,7 +4,7 @@ A Pixi web & webdesign közös vállalkozás bemutatkozó és portfólióoldala.
 
 ## Projektállapot
 
-A Laravel 13.42.0 alapalkalmazás Sail környezetben elindult. A MySQL és Redis szolgáltatások működnek, az alap Laravel migrációk lefutottak. Az első, görgethető főoldal jelenleg külön design prototípusként készült el; a végleges React frontend és a backendhez kapcsolása későbbi lépés.
+A Laravel 13.42.0 alapalkalmazás Sail környezetben elindult. A MySQL és Redis szolgáltatások működnek, az alap Laravel migrációk lefutottak. A React + Vite frontend elkészült és az Nginxen keresztül kapcsolódik a Laravel API-hoz. Helyi cím: http://localhost:8082 . Regisztráció, e-mail-megerősítés, belépés, ajánlatküldés és a demófelület működik; az élő Claude-próba külön, halasztott feladat.
 
 ## Tervezett technológia
 
@@ -214,3 +214,69 @@ Az élő próba később: `backend/.env` fájlban `ANTHROPIC_API_KEY` és strukt
 2026-11-16: **89 teszt, 484 assertion sikeres**, Pint és whitespace-ellenőrzés rendben; a helyi migrációk lefutottak. Valós MySQL-zárakon, hat külön PHP-folyamattal teszteltük az utolsó használatért versenyző kéréseket és az azonos kulcsú párhuzamos ismétlést: mindkettőnél egyetlen szimulált szolgáltatói hívás és egyetlen mentés. Külön teszt igazolja a zárvárakozás lejáratát. Az eredmény-, jogosultsági és ajánlatkapcsolási tesztek is sikeresek.
 
 Nginxen végzett próba: vendégként 401; megerősített helyi #2 tesztfiókkal, hiányzó Claude-konfiguráció mellett 503 és változatlan 5-ös keret. A teszttokent kijelentkezéssel visszavontuk. **Sikeres élő Claude-válasz és annak tartalmi minősége még nincs igazolva.**
+
+## React frontend (6. szakasz)
+
+A `frontend/` önálló React + Vite alkalmazás, React Routerrel és központi API-klienssel. Ellenőrzött környezet: Node 24.22.1, React 19.3.1, Vite 8.3.8. A `package-lock.json` rögzíti a telepített függőségeket. Az elfogadott főoldalminta mustársárga/petróleum, antracit/törtfehér irányát követi; a kártyák szemléltető grafikák, az esettanulmány nem valódi ügyfélreferencia. Nincs kitalált telefonszám, ügyfél vagy eredményszázalék.
+
+### Első indítás és frissítés
+
+A repository gyökeréből, **az Nginx indítása előtt**:
+
+```bash
+npm --prefix frontend ci
+npm --prefix frontend run build
+cd backend
+./vendor/bin/sail up -d
+```
+
+Oldal: **http://localhost:8082/**. A `frontend/dist` generált és Gitből kizárt; az Nginx csak olvasható kötettel szolgálja ki. A `/api/` és `/up` továbbra is Laravelre kerül, a frontend útvonalai `index.html` fallbacket kapnak. A böngészőben közvetlenül megnyitott `/belepes`, `/ajanlat` és `/megerosites/...` is működik.
+
+Frontend változtatás után `npm --prefix frontend run build`, majd böngészőfrissítés. Laravel queue-kód változtatása után `./vendor/bin/sail restart inquiry-worker` a backend mappából. Fejlesztéshez (HMR):
+
+```bash
+npm --prefix frontend run dev
+```
+
+A Vite címe `http://127.0.0.1:5174`; a `/api` proxyn keresztül a működő Nginx/Laravel `localhost:8082` címét használja. Ehhez a Docker környezetnek futnia kell. A dev szerver leállítása Ctrl+C. A kész helyi alkalmazás működéséhez nem kell dev szervert futtatni.
+
+### Felhasználói utak
+
+- `/`: főoldal, szolgáltatások, szemléltető koncepció és kapcsolatblokk.
+- `/regisztracio`, `/belepes`: név/e-mail/jelszó, kliens- és szerveroldali hibák, küldés közbeni tiltás. Regisztráció után automatikus belépés, majd megerősítési kapu.
+- `/megerosites/{user}/{hash}?expires=...&signature=...`: a levélben kapott, felhasználóbarát visszajelző oldal. A megerősítő gomb az eredeti aláírt `/api/v1/email/verify/...` útvonalat hívja; az aláírás és a 60 perces lejárat védelme megmarad. A korábbi, közvetlen API-linkek továbbra is érvényesek a lejáratukig. A felület nem jelentkeztet be a link megnyitásával.
+- `/demo`: vendégként belépés/regisztráció; megerősítésig ellenőrzés és levél-újraküldés; megerősítve keret, szövegmező, elemzés, hibakezelés, eredmény és továbbvitel az ajánlatkérésbe. Nulla keretnél tiltott elemzés és ajánlatkérési lehetőség.
+- `/ajanlat`: nyilvános űrlap; belépve név/e-mail előkitöltés. Demóból érkezve a saját eredmény leírása és azonosítója átkerül. Sikeres mentés után azonosítós visszaigazolás, ismételt küldés nélkül. Érvénytelen vagy sikertelen küldéskor a kitöltött mezők megmaradnak az oldalon.
+
+A bearer token csak a React alkalmazás memóriájában él: nem kerül URL-be, localStorage-ba vagy sessionStorage-ba. Újratöltés, új lap vagy bezárás után újra be kell lépni. Az űrlappiszkozat nem marad meg oldal-újratöltés után. A kijelentkezés megkísérli a szerveroldali visszavonást, majd törli a helyi munkamenetet; sikertelen hálózati lezárásról visszajelzést ad. A 401-es API-válasz törli a helyi hitelesítést. Teljes React-újratöltés önmagában nem vonja vissza a 24 óráig élő szerveroldali tokent.
+
+A demókéréshez új szöveg esetén új UUID Idempotency-Key készül. Sikertelen/eldobott válasz utáni azonos szövegű újrapróbálkozás ugyanazt a kulcsot használja. A változatlan, már megjelenített eredményt nem indítjuk el még egyszer. Az előkitöltött ajánlathoz csak az aktuális megerősített tulajdonos demóazonosítója csatolódik.
+
+### Nyilvános frontend-beállítások
+
+A `frontend/.env.example` alapján létrehozható, Gitből kizárt `frontend/.env.local`:
+
+```dotenv
+VITE_CONTACT_PHONE=
+VITE_BOOKING_URL=
+VITE_DEMO_AVAILABLE=false
+```
+
+A telefon csak érvényes szám esetén kattintható; a foglaláshoz HTTPS URL szükséges, hiányában az ajánlatkérőre irányítunk. Ezek nyilvános, buildidejű értékek. **Anthropic- vagy más titkos kulcs soha nem kerülhet VITE_ változóba.**
+
+A `VITE_DEMO_AVAILABLE` jelenleg szándékosan false: az élő AI-bekötés halasztva van. A felület ezt jelzi és nem indít demóhívást. Csak az 5. szakasz élő Claude-ellenőrzése után állítsd true-ra, majd készíts új buildet. Ez megjelenítési kapcsoló; a tényleges jogosultságot és kvótát mindig a backend ellenőrzi.
+
+### Ellenőrzés
+
+```bash
+npm --prefix frontend test
+npm --prefix frontend run build
+# A backend/ mappában:
+./vendor/bin/sail artisan test
+```
+
+Eredmény: **19 frontendteszt sikeres, 89 backendteszt / 484 assertion sikeres**; build, Pint, Nginx konfiguráció és whitespace rendben. A frontendtesztek a valódi React komponenseket és mockolt API-válaszokat használják: regisztráció, megerősítési kapu, aláírt link céloldala, hálózati/mezőhibák, függő küldés duplázásának tiltása, nulla keret, kikapcsolt demó, azonos idempotenciakulcsú újrapróbálkozás, előkitöltött ajánlat és kijelentkezés.
+
+Valódi böngészős próba Nginxen: 1280-as asztali és 390-es mobilnézet; mobilos ajánlat mentése (#2) és Mailpit-visszaigazolása; helyi tesztfiók regisztrálása, levél megerősítése, 5/5 keret megjelenése, letiltott élő demó, kijelentkezés. A megjelölt helyi minták megmaradtak; a tesztfiókból kijelentkeztünk. Fizetős AI-hívás nem történt. A demó sikeres eredményből történő előkitöltése komponens- és backendteszttel igazolt; sikeres élő Claude-válasszal még nem.
+
+Képernyőképek: [asztali főoldal](docs/preview/pixi-stage6-desktop.jpg), [mobil főoldal](docs/preview/pixi-stage6-mobile.jpg). Még hátravan: végleges kontaktadatok, saját referenciaanyagok és a külön designjóváhagyás, az élő AI-próba, éles SMTP, valamint a 8. szakasz teljes minőségellenőrzése/élesítése.

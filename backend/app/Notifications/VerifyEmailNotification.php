@@ -32,11 +32,14 @@ class VerifyEmailNotification extends VerifyEmail implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
+        $frontendUrl = URL::to('/megerosites/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification()));
+        $signedQuery = parse_url($this->verificationUrl($notifiable), PHP_URL_QUERY);
+
         return (new MailMessage)
             ->subject('Erősítsd meg az e-mail-címed – Pixi web & webdesign')
             ->greeting('Szia!')
             ->line('Az e-mail-címed megerősítéséhez kattints az alábbi gombra.')
-            ->action('E-mail-cím megerősítése', $this->verificationUrl($notifiable))
+            ->action('E-mail-cím megerősítése', $frontendUrl.'?'.$signedQuery)
             ->line('A link 60 percig érvényes. Ha nem te regisztráltál, hagyd figyelmen kívül ezt a levelet.')
             ->salutation('Pixi web & webdesign');
     }

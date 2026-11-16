@@ -31,4 +31,18 @@ class RegisterRequest extends FormRequest
             'demo_uses_left' => ['prohibited'],
         ];
     }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'required' => 'A mező kitöltése kötelező.',
+            'string' => 'Szöveges értéket adj meg.',
+            'max' => 'A mező legfeljebb :max karakter lehet.',
+            'email.email' => 'Adj meg érvényes e-mail-címet.',
+            'email.unique' => 'Ehhez az e-mail-címhez már tartozik fiók. Jelentkezz be.',
+            'password.confirmed' => 'A két jelszó nem egyezik.',
+            'prohibited' => 'Ezt a mezőt nem állíthatod be.',
+        ];
+    }
 }

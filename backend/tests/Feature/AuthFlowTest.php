@@ -148,9 +148,9 @@ class AuthFlowTest extends TestCase
         $this->assertSame('elek@example.com', $message->getTo()[0]->getAddress());
         $this->assertStringContainsString('Erősítsd meg', $message->getSubject());
         $html = $message->getHtmlBody();
-        preg_match('~href="([^"]*/api/v1/email/verify/[^"]+)"~', $html, $matches);
+        preg_match('~href="([^"]*/megerosites/[^"]+)"~', $html, $matches);
         $this->assertArrayHasKey(1, $matches);
-        $this->get(html_entity_decode($matches[1]))->assertOk();
+        $this->get(str_replace('/megerosites/', '/api/v1/email/verify/', html_entity_decode($matches[1])))->assertOk();
         $this->assertTrue(User::firstOrFail()->hasVerifiedEmail());
     }
 
@@ -303,7 +303,7 @@ class AuthFlowTest extends TestCase
     public function test_verification_link_expires_after_sixty_minutes(): void
     {
         $user = User::factory()->unverified()->create();
-        $url = (new VerifyEmailNotification)->toMail($user)->actionUrl;
+        $url = str_replace('/megerosites/', '/api/v1/email/verify/', (new VerifyEmailNotification)->toMail($user)->actionUrl);
         $this->travel(61)->minutes();
         $this->get($url)->assertForbidden();
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
