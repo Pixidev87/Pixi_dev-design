@@ -24,6 +24,23 @@ services:
             - mysql
             - redis
             - mailpit
+    inquiry-worker:
+        image: 'sail-8.5/app'
+        user: '${WWWUSER:-1000}:${WWWGROUP:-1000}'
+        working_dir: /var/www/html
+        entrypoint: ['php']
+        command: ['artisan', 'queue:work', 'inquiry-mail', '--queue=inquiry-mail', '--sleep=3', '--tries=3', '--timeout=60']
+        restart: unless-stopped
+        stop_grace_period: 70s
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            mysql:
+                condition: service_healthy
+            mailpit:
+                condition: service_started
     nginx:
         image: 'nginx:stable-alpine'
         ports:

@@ -100,3 +100,42 @@ A `GET /api/v1/status` nyilvános végpont válasza:
 A kérés útja: `routes/api.php` → `StatusController` → `StatusService` → JSON-válasz. A Controller a HTTP-válaszért, a Service az adatok összeállításáért felel. Ez alkalmazásstátusz, nem adatbázis- vagy Redis-állapotvizsgálat. Az ismeretlen API-útvonalak JSON-formátumú 404-es választ adnak. Model, Form Request és API Resource az ajánlatkérő funkciónál kap szerepet; ehhez az olvasási példához nem szükségesek.
 
 2026-11-16: Sailben 4 teszt és 10 assertion sikeres; Pint sikeres; az Nginxen keresztüli HTTP-próba sikeres. A két eredeti alapteszt önmagában nem teszteli az adatbázis-kapcsolatot. Laravel Boost fejlesztői függőség a projekt AGENTS.md előírása szerint telepítve.
+
+## Ajánlatkérő backend (3. szakasz)
+
+A `POST /api/v1/inquiries` nyilvános végpont kötelező mezői: `name` (legfeljebb 150 karakter), `email` (RFC szerinti e-mail, legfeljebb 254 karakter), `description` (legfeljebb 5000 karakter). A szövegek szélén lévő szóközöket a Laravel eltávolítja. Az állapotot a szerver `new` értékre állítja; a kliens által megadott állapot és a még nem támogatott demóazonosító 422-es hibát ad. A `demo_session_id` nullable mező előkészítés: a külső kulcs és a tulajdonos ellenőrzése a demó szakaszában készül el.
+
+```bash
+cd backend
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail up -d inquiry-worker
+./vendor/bin/sail artisan test
+```
+
+Példakérés (helyi ajánlatot hoz létre, visszaigazolása a Mailpitbe kerül):
+
+```bash
+curl -i http://localhost:8082/api/v1/inquiries \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  --data '{"name":"Teszt Elek","email":"elek@example.test","description":"Weboldalt szeretnék."}'
+```
+
+Siker: **201**, `{"data":{"id":1,"status":"new","created_at":"…"}}`. Hibás adat: **422**, mezőnkénti `errors`; IP-címenként legfeljebb 5 kérés/perc, utána **429**. Nincs nyilvános ajánlatlista vagy lekérdezés.
+
+Kérés útja: `StoreInquiryRequest` → `InquiryController` → `InquiryService` → `Inquiry` → `InquiryResource`. Az állapot PHP backed enum (`new`, `processed`, `sent`); a levél kézbesítése nem módosítja az ajánlat üzleti állapotát.
+
+Az ajánlat és a visszaigazoló Mailable feladata ugyanabba az adatbázis-tranzakcióba kerül. Az `inquiry-mail` kapcsolat az alkalmazás adatbázisát és a meglévő `jobs` táblát használja. A külön Docker worker ezt a sort olvassa, legfeljebb három próbálkozással (30, majd 120 másodperc várakozás); SMTP-hiba nem törli az ajánlatot. A 201 a mentést és a küldés sorba állítását jelenti. A kézbesítés legalább egyszeri: ritka megszakadásnál ismételt levél előfordulhat. Ismételt POST új ajánlatot hoz létre.
+
+```bash
+./vendor/bin/sail ps inquiry-worker
+./vendor/bin/sail logs --tail=30 inquiry-worker
+./vendor/bin/sail artisan queue:failed
+# A küldési hiba javítása után egy kiválasztott sikertelen feladat újraindítása:
+./vendor/bin/sail artisan queue:retry FELADAT_UUID
+# Worker kódjának frissítése után:
+./vendor/bin/sail restart inquiry-worker
+```
+
+A helyi Mailpit felülete ezen a gépen: http://localhost:8026 (a `FORWARD_MAILPIT_DASHBOARD_PORT` szabályozza). A feladó neve Pixi web & webdesign; a cím helyi tesztérték. Éles SMTP és valódi feladói cím az induláskor állítandó be. A frontend bekötése későbbi szakasz.
+
+2026-11-16 ellenőrzés: **21 teszt, 131 assertion**, Pint és Compose-konfiguráció rendben. A MySQL-tesztek kizárólag a `testing` adatbázison futnak; guard védi a RefreshDatabase használatát. Tesztelt a validáció, adatmentés, tranzakciós visszagörgetés, tényleges adatbázisos queue-feldolgozás, SMTP-hiba és újrapróbálkozás, HTML-escape és 429-es korlátozás. Helyi teljes próba: `inquiries.id=1`, címzett `pixi-stage3@example.test`; az ajánlat és a Mailpit-levél megmaradt ellenőrizhető mintának.
