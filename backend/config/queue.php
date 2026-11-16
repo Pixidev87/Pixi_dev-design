@@ -95,15 +95,6 @@ return [
             'driver' => 'failover',
             'connections' => [
 
-                // Same database as inquiries: both records commit or roll back together.
-                'inquiry-mail' => [
-                    'driver' => 'database',
-                    'connection' => null,
-                    'table' => 'jobs',
-                    'queue' => 'inquiry-mail',
-                    'retry_after' => 90,
-                    'after_commit' => false,
-                ],
                 'database',
                 'deferred',
             ],

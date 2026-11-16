@@ -139,3 +139,34 @@ Az ajánlat és a visszaigazoló Mailable feladata ugyanabba az adatbázis-tranz
 A helyi Mailpit felülete ezen a gépen: http://localhost:8026 (a `FORWARD_MAILPIT_DASHBOARD_PORT` szabályozza). A feladó neve Pixi web & webdesign; a cím helyi tesztérték. Éles SMTP és valódi feladói cím az induláskor állítandó be. A frontend bekötése későbbi szakasz.
 
 2026-11-16 ellenőrzés: **21 teszt, 131 assertion**, Pint és Compose-konfiguráció rendben. A MySQL-tesztek kizárólag a `testing` adatbázison futnak; guard védi a RefreshDatabase használatát. Tesztelt a validáció, adatmentés, tranzakciós visszagörgetés, tényleges adatbázisos queue-feldolgozás, SMTP-hiba és újrapróbálkozás, HTML-escape és 429-es korlátozás. Helyi teljes próba: `inquiries.id=1`, címzett `pixi-stage3@example.test`; az ajánlat és a Mailpit-levél megmaradt ellenőrizhető mintának.
+
+## Regisztráció és e-mail-megerősítés (4. szakasz)
+
+Laravel Sanctum 4.4.0 biztosítja a bearer tokenes API-hitelesítést. A `backend/` könyvtárban migrálj, majd indítsd újra a meglévő levélküldő workert:
+
+```bash
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail restart inquiry-worker
+./vendor/bin/sail artisan test
+```
+
+| Végpont | Bemenet / védelem | Eredmény |
+|---|---|---|
+| `POST /api/v1/register` | `name`, `email`, `password`, `password_confirmation` | 201; új, még nem megerősített felhasználó; levél sorba állítva |
+| `POST /api/v1/login` | `email`, `password` | 200; egyszer megjelenített bearer token és lejárat |
+| `GET /api/v1/me` | bearer token és megerősített e-mail | 200; saját adatok és hátralévő demókeret |
+| `POST /api/v1/logout` | bearer token | 204; az aktuális token visszavonva |
+| `POST /api/v1/email/verification-notification` | bearer token | 200; nem megerősített felhasználónak új levél |
+| `GET /api/v1/email/verify/{user}/{hash}` | a levélben kapott, 60 percig érvényes aláírt URL | 200; megerősítés, ismételt érvényes kattintás is sikeres |
+
+A név kötelező (max. 150 karakter); az e-mailt kisbetűsítjük és egyedivé tesszük. A jelszó legalább 12 karakter, a jelenlegi bcrypt beállítás miatt legfeljebb 72 bájt; nulla bájt nem fogadható el. A jelszó tárolás előtt hashelődik. A `demo_uses_left` és az `email_verified_at` szerveroldali mezők, kliensoldali felülírásuk tiltott. Új fiók pontosan 5 felhasználást kap; a belépés ezt nem tölti újra. A tényleges kvótafogyasztás az 5. szakasz feladata.
+
+A regisztráció a felhasználót és a megerősítő levél adatbázisos queue-feladatát egy tranzakcióban menti. A magyar levél a meglévő `inquiry-mail` soron és `inquiry-worker` szolgáltatáson jut el a Mailpitbe. A helyes `APP_URL` szükséges az aláírt URL-hez (helyben `http://localhost:8082`). A link birtoklása igazolja a postaládához hozzáférést: böngészőből, bearer token nélkül nyitható meg, és nem jelentkezteti be a felhasználót. Lejárt vagy módosított link 403; régi e-mailhez készült link e-mail-változás után nem használható.
+
+A token élettartama 24 óra; az adatbázis csak a hashét tárolja. Megerősítés előtt lehet belépni, kijelentkezni és megerősítő levelet kérni, de a `/me` végpont 403-at ad. Hiányzó, hibás, lejárt vagy visszavont token 401. A kijelentkezés az adott tokent vonja vissza; a többi eszköz tokenje megmarad. Böngészős tokenkezelés és a felületek a React szakaszban készülnek el.
+
+Kéréskorlátok: regisztráció 5/perc/IP; belépés 5/perc/e-mail+IP és 20/perc/IP; újraküldés 3/perc/fiók; megerősítő link 20/perc/IP. Túllépéskor 429. Hibás belépésnél egységes hibaüzenet jár létező és ismeretlen e-mailre is. Az API `Accept` fejléc nélkül is JSON-választ ad.
+
+2026-11-16: **52 teszt, 306 assertion sikeres**, Pint, Compose és whitespace-ellenőrzés rendben. A tesztek a külön `testing` MySQL-adatbázison futnak. A regisztráció–Mailpit–megerősítés–védett végpont–kijelentkezés folyamatot az Nginxen keresztül is igazoltuk. A megjelölt helyi tesztfelhasználó #1 megmaradt; a teszt végén a tokenjét visszavontuk. Valódi SMTP és frontend továbbra is későbbi feladat.
+
+A folyamatnapló és a HTML-terv verziózott másolatai a `docs/` mappába kerülnek. A `portfolio/` mappában található, eddig használt példányokat ugyanazzal a tartalommal tartjuk naprakészen.
