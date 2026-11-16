@@ -199,7 +199,7 @@
   <tr><td><code>name</code></td><td>string</td><td>kötelező</td></tr>
   <tr><td><code>email</code></td><td>string</td><td>kötelező, érvényes e-mail</td></tr>
   <tr><td><code>description</code></td><td>text</td><td>kötelező, rövid leírás</td></tr>
-  <tr><td><code>demo_session_id</code></td><td>unsigned bigint, nullable; külső kulcs az 5. szakaszban</td><td>előkészített mező; a végpont egyelőre nem fogad el demóazonosítót</td></tr>
+  <tr><td><code>demo_session_id</code></td><td>foreign key, nullable; az 5. szakaszban elkészült</td><td>saját demóeredmény kapcsolható, megerősített tulajdonos tokenjével</td></tr>
   <tr><td><code>status</code></td><td>PHP backed enum: new, processed, sent</td><td>PHP backed enum</td></tr>
 </table>
 </div>
@@ -268,15 +268,32 @@ event(new Registered($user));</code></pre>
 
 <h3>Lépések</h3>
 <ul class="steps">
-  <li><input type="checkbox"><div>Demó végpont: <code>POST /api/demo</code>, bejelentkezett felhasználóval<div class="verify"><strong>Kész, ha:</strong> bejelentkezés nélkül 401-es válasz jön.</div></div></li>
-  <li><input type="checkbox"><div>Kvóta-ellenőrzés teszttel: 5. használat után a következő 403-as válasz<div class="verify"><strong>Kész, ha:</strong> a teszt pontosan az 5. és 6. hívásnál vált.</div></div></li>
-  <li><input type="checkbox"><div>Kvóta csökkentése atomikusan (adatbázis-tranzakcióban), hogy párhuzamos hívásnál se lehessen túllépni<div class="verify"><strong>Kész, ha:</strong> párhuzamos teszttel is 5 a maximum.</div></div></li>
-  <li><input type="checkbox"><div>Claude-hívás a service rétegben, a kulcs a <code>.env</code>-ben<div class="verify"><strong>Kész, ha:</strong> a válasz rövid, strukturált összefoglaló.</div></div></li>
-  <li><input type="checkbox"><div>Hibakezelés: API-hiba esetén a kvóta nem fogy el<div class="verify"><strong>Kész, ha:</strong> hibás hívás után a <code>demo_uses_left</code> érték nem változik.</div></div></li>
-  <li><input type="checkbox"><div>A demó eredményének mentése, hogy az űrlap előre kitölthető legyen<div class="verify"><strong>Kész, ha:</strong> a <code>demo_session_id</code> az ajánlathoz csatolódik.</div></div></li>
+  <li><input type="checkbox" checked><div>Demó végpont: <code>POST /api/v1/demo</code>, bejelentkezett, megerősített e-mailű felhasználóval és UUID Idempotency-Key fejléccel<div class="verify"><strong>Kész, ha:</strong> bejelentkezés nélkül 401-es válasz jön.</div></div></li>
+  <li><input type="checkbox" checked><div>Kvóta-ellenőrzés teszttel: 5. használat után a következő 403-as válasz<div class="verify"><strong>Kész, ha:</strong> a teszt pontosan az 5. és 6. hívásnál vált.</div></div></li>
+  <li><input type="checkbox" checked><div>Kvóta csökkentése atomikusan (adatbázis-tranzakcióban), hogy párhuzamos hívásnál se lehessen túllépni<div class="verify"><strong>Kész, ha:</strong> párhuzamos teszttel is 5 a maximum.</div></div></li>
+  <li><input type="checkbox"><div>Claude-hívás a service rétegben, a kulcs a <code>.env</code>-ben<div class="verify"><strong>Állapot:</strong> a Claude-kliens és a strukturált JSON-kimenet tesztelve, szimulált válaszokkal. Az élő próba Zoli kérésére halasztva; kulcs és modell nincs beállítva. A jelölőnégyzet az élő, tartalmilag is ellenőrzött válasz után pipálható ki.</div></div></li>
+  <li><input type="checkbox" checked><div>Hibakezelés: API-hiba esetén a kvóta nem fogy el<div class="verify"><strong>Kész, ha:</strong> hibás hívás után a <code>demo_uses_left</code> érték nem változik.</div></div></li>
+  <li><input type="checkbox" checked><div>A demó eredményének mentése, hogy az űrlap előre kitölthető legyen<div class="verify"><strong>Kész, ha:</strong> a <code>demo_session_id</code> az ajánlathoz csatolódik.</div></div></li>
 </ul>
 
-<div class="question"><strong>Kérdés:</strong> ha egy regisztrált felhasználó már elhasználta az 5 próbálkozást, mit lásson? Egy üzenet az ajánlatkérő űrlapra irányítva, vagy más lehetőség?</div>
+<div class="verify"><strong>Döntés:</strong> nulla keretnél 403, demo_quota_exhausted kód és az ajánlatkérésre irányító magyar üzenet. A frontend a 6. szakaszban jeleníti meg ezt.</div>
+
+<div class="verify"><strong>2026-11-16 – 5. szakasz: kód és tesztek kész; élő Claude-próba halasztva.</strong> 89 teszt / 484 assertion sikeres; Pint és whitespace rendben. Az eredmény és a keretcsökkentés közös tranzakcióban történik, MySQL-sorzárral. A szimulált szolgáltatói hibák, hibás kimenet és mentési hiba nem fogyasztanak keretet. A sikeresen mentett azonos kérés ismétlése új API-hívás nélkül visszaolvasható.</div>
+<p><strong>Párhuzamosság:</strong> hat külön PHP-folyamattal igazoltuk, hogy az utolsó felhasználást csak egy kérés fogyaszthatja el, és azonos kulcsú ismétlésnél egyetlen eredmény keletkezik. Valós MySQL-záridőtúllépés: 503, szolgáltatói hívás nélkül.</p>
+<p><strong>Új funkciók:</strong> GET /api/v1/demo/{id} a saját eredmény visszaolvasására; saját eredmény az ajánlatkéréshez kapcsolható. Külső kulcs és tulajdonosi ellenőrzés kész. Az Idempotency-Key UUID fejléc kötelező; azonos kulcs eltérő szöveggel 409.</p>
+<p><strong>Helyi próba:</strong> Nginxen vendégként 401; megerősített fiókkal, hiányzó Claude-beállítás mellett 503 és változatlan 5-ös keret. Nem történt fizetős hívás. ANTHROPIC_API_KEY és ANTHROPIC_MODEL később állítandó be a backend/.env fájlban; sikeres élő válasz és annak minősége még nincs igazolva.</p>
+<p><strong>Git:</strong> megvalósítás <code>c8e2b47</code>, main ágra feltöltve. A két dokumentum helyi és docs/ alatti példánya együtt frissül.</p>
+<h3>A kvótakezelés lényegi kódja</h3>
+<pre><code>$lockedUser = User::whereKey($user-&gt;id)-&gt;lockForUpdate()-&gt;firstOrFail();
+// Kvóta- és idempotenciaellenőrzés után, ugyanabban a tranzakcióban:
+$result = $this-&gt;claude-&gt;analyze($prompt);
+$session = $lockedUser-&gt;demoSessions()-&gt;create([
+    &#x27;prompt&#x27; =&gt; $prompt,
+    &#x27;result&#x27; =&gt; $result,
+    &#x27;model&#x27; =&gt; config(&#x27;services.anthropic.model&#x27;),
+    &#x27;idempotency_key&#x27; =&gt; $idempotencyKey,
+]);
+$lockedUser-&gt;decrement(&#x27;demo_uses_left&#x27;);</code></pre>
 
 <h2 id="s6">6. React frontend</h2>
 <p class="sub">Felelős: te, a párod designja szerint. Cél: a főoldal, a demó és az űrlap működik.</p>
@@ -326,7 +343,7 @@ event(new Registered($user));</code></pre>
   <li>Mobilon megszakadt elküldés az űrlapnál: az adat ne vesszen el.</li>
 </ol>
 
-<div class="verify"><strong>Aktuális állapot (2026-11-16):</strong> a 2., 3. és 4. szakasz elkészült. Következő: 5. szakasz. A külön demó-/űrlapdesign és a React frontend még hátravan.</div>
+<div class="verify"><strong>Aktuális állapot (2026-11-16):</strong> a 2., 3. és 4. szakasz kész. Az 5. szakasz kódja és tesztjei kész, élő Claude-próba később. Előkészíthető a 6. szakasz, a React frontend; külön demó-/űrlapdesign még hátravan.</div>
 
 </main>
 </body>

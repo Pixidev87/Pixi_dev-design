@@ -24,7 +24,7 @@
 | 2 | Laravel alap | Zoli | **kész** | Sail, MySQL/Redis, státusz API és teljes rétegfelosztás működik; tesztek igazolva |
 | 3 | Igényfelmérő űrlap (backend) | Zoli | **kész** | validáció, MySQL-mentés, enum, Resource, tranzakciós levélsor és Mailpit-kézbesítés ellenőrizve |
 | 4 | Regisztráció és e-mail | Zoli | **kész** | Sanctum-token, aláírt megerősítés, újraküldés, kijelentkezés, kezdő 5-ös keret; 52 teszt / 306 assertion |
-| 5 | Demó és 5-használat-keret | Zoli | nincs elkezdve | |
+| 5 | Demó és 5-használat-keret | Zoli | **kód és tesztek kész; élő próba halasztva** | 89 teszt / 484 assertion; MySQL párhuzamosság, idempotencia, saját demó–ajánlat kapcsolat kész; kulcs/modell nincs beállítva |
 | 6 | React frontend | Zoli | nincs elkezdve | |
 | 7 | Portfólió | közösen | nincs elkezdve | |
 | 8 | Minőség és indítás | közösen | nincs elkezdve | |
@@ -67,13 +67,15 @@
 - Külön demó- és ajánlatkérő képernyőtervek, hiba- és betöltési állapotok.
 - Teljes design-rendszer és végleges szövegek; logó és saját projektanyagok feltöltése.
 - Backend rétegek és példa API-végpont: elkészültek (2–3. szakasz).
-- Tesztfuttatás igazolva: 52 teszt, 306 assertion; adatbázisos, queue-, hitelesítési és megerősítési tesztekkel együtt.
+- Tesztfuttatás igazolva: 89 teszt, 484 assertion; adatbázisos, queue-, hitelesítési, megerősítési, demó- és párhuzamossági tesztekkel együtt.
 
 ---
 
 ## Következő lépés
 
-5. szakasz: a demó és az összesen 5 használatos keret szerveroldali kezelése. Atomi kvótafogyasztás, hibánál változatlan keret, eredménymentés és a demo_session_id jogosultságellenőrzése/külső kulcsa. Valódi Claude-híváshoz a szerveroldali API-hozzáférés és a modell beállítása szükséges.
+Az 5. szakasz kódja és automatikus tesztjei elkészültek. Az élő Claude-próbát Zoli kifejezett kérésére későbbre hagytuk: ehhez szerveroldali ANTHROPIC_API_KEY és ANTHROPIC_MODEL beállítás, majd valódi válasz- és tartalmi ellenőrzés szükséges. A teljes 5. szakasz élő integrációs elfogadása ezért még nyitott.
+
+Továbbhaladásként előkészíthető a 6. szakasz: React frontend, a meglévő designanyagokkal és az elkészült API-val. Új szakasz csak felhasználói kérésre indul.
 
 ## 2026-11-16 – 2. szakasz: tesztek és API-alap
 
@@ -123,3 +125,22 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - Git: a megvalósítás és README commitja `6da9f64` — `feat: add Sanctum authentication and queued email verification`. A `git push origin main` sikeres: `6897a00..6da9f64`.
 - A két dokumentum portfolio/ mappában lévő példányai frissítve. Azonos tartalmú, verziózott másolatuk a pixi-web/docs/ mappába kerül, külön dokumentációs commitban.
 - A 4. szakasz kész. Következő az 5. szakasz; éles SMTP és a React felület még nincs bekötve.
+
+## 2026-11-16 – 5. szakasz: demó, kvóta és eredménymentés
+
+- Felhasználói jóváhagyás: az 5. szakasz folytatása a két dokumentum és a Git frissítésével. Külön döntés: **az élő Claude-próbát későbbre hagyjuk**. Nem történt fizetős hívás, nincs API-kulcs vagy modell a helyi beállításban.
+- `POST /api/v1/demo`: Sanctum-token és megerősített e-mail kell; 10–3000 karakteres prompt, UUID Idempotency-Key fejléc. Új eredmény 201, mentett azonos kérés ismétlése 200; azonos kulcs más szöveggel 409. Kéréskorlát: 10/perc/fiók.
+- `DemoService`: a felhasználó MySQL-sorának lockForUpdate zárolása. A Claude-hívás alatt is tartott záron belül történik az eredmény mentése és a számláló csökkentése. Nincs automatikus tranzakció- vagy HTTP-újrapróbálkozás. Zárvárakozási időtúllépés/holtpont 503-at ad, újrapróbálható azonos kulccsal.
+- Összesen 5 sikeres használat engedélyezett. A 6. új kérés 403, demo_quota_exhausted kóddal és ajánlatkérésre irányító üzenettel. A sikeresen mentett eredmény azonos kulccsal nulla keret mellett is visszaolvasható; a replay nem fogyaszt keretet és nem hívja a szolgáltatót.
+- Szolgáltatói hiba vagy timeout: 503; hibás, visszautasított vagy félbeszakadt kimenet: 502. Konfigurációhiány: 503. Ezek, valamint a mentési hiba nem csökkentik a felhasználói keretet. Külső API és adatbázis között nincs elosztott tranzakció: megszakadt folyamatnál szolgáltatói költség előfordulhat mentett eredmény nélkül is.
+- `ClaudeService`: fix HTTPS Anthropic Messages API, szerveroldali x-api-key fejléc, rögzített 2023-06-01 API-verzió, konfigurálható modell; output_config.format JSON-séma (summary/recommendation), további helyi kimenetellenőrzéssel. 1024 kimeneti token, 5/25 másodperces kapcsolódási/teljes timeout; nincs redirect-követés. A nyers szolgáltatói hiba és a kulcs nem jut a válaszba. Hivatalos referencia: https://platform.claude.com/docs/en/build-with-claude/structured-outputs és https://platform.claude.com/docs/en/api/versioning .
+- `DemoSession` modell/factory/migráció: fiók, prompt, JSON-eredmény, modell és fiókonként egyedi idempotenciakulcs tárolva. `GET /api/v1/demo/{id}`: csak a megerősített tulajdonos olvashatja; idegen/nem létező eredmény 404.
+- Az inquiries.demo_session_id külső kulcsa elkészült. Ajánlatkéréshez csak bejelentkezett, megerősített tulajdonos kapcsolhat saját demóeredményt. A demó nélküli ajánlatkérés továbbra is nyilvános.
+- TDD: a demó első hozzáférési tesztje hiányzó végpont miatt 404-gyel piros, megvalósítás után a várt 401-gyel zöld.
+- Végső teljes tesztcsomag: **89 teszt, 484 assertion sikeres**. Pint és whitespace-ellenőrzés rendben. A külön testing MySQL-adatbázist védő ellenőrzések minden adatbázisos teszt előtt aktívak.
+- Valós párhuzamossági ellenőrzés hat külön PHP-folyamattal, közös MySQL-zárakkal: utolsó 1 felhasználásnál 1 új eredmény, 5 elutasítás, 1 szimulált API-hívás. Azonos kulcsú párhuzamos ismétlésnél 1 új eredmény és 5 visszaolvasás, összesen 1 hívás. A tényleges MySQL-záridőtúllépés külön tesztje is sikeres, szolgáltatói hívás nélkül.
+- Külön tesztek: 5./6. használat határa; idempotencia és kulcsütközés; 401/403/404 tulajdonosi védelem; 422/429 bemenet-/kéréskorlát; szolgáltatói 401/429/500/redirect/timeout; hibás JSON, típus, hossz, refusal/max_tokens; mentési hiba visszagörgetése; saját/idegen demóhoz kapcsolt ajánlat.
+- Fejlesztői migrációk lefutottak. Az Nginxen végzett próba konfiguráció nélkül 503-at adott, változatlan 5-ös kerettel; vendégként 401. Élő sikeres Claude-válasz és annak minősége még nincs ellenőrizve.
+- Megjelölt helyi próba: felhasználó #2, `pixi-stage5-1794844102806523000@example.test`; a megerősítő levél Mailpitbe érkezett. A próba végén kijelentkeztünk (204), a tokent visszavontuk. Jelszó vagy bearer token nem került fájlba/naplókimenetbe.
+- Git: `c8e2b47` — `feat: add transactional demo quota and Claude integration`, main ágra feltöltve (`156da88..c8e2b47`). A README részletes API-szerződést és üzemeltetési korlátokat tartalmaz.
+- A napló és a HTML-terv helyi példánya és a repository docs/ mappájában lévő verziózott másolata azonos tartalommal frissül. Az 5. szakasz Claude élő-ellenőrzési jelölőnégyzete szándékosan nyitva marad.
