@@ -26,7 +26,7 @@
 | 4 | Regisztráció és e-mail | Zoli | **kész** | Sanctum-token, aláírt megerősítés, újraküldés, kijelentkezés, kezdő 5-ös keret; 52 teszt / 306 assertion |
 | 5 | Demó és 5-használat-keret | Zoli | **kód és tesztek kész; élő próba halasztva** | 89 teszt / 484 assertion; MySQL párhuzamosság, idempotencia, saját demó–ajánlat kapcsolat kész; kulcs/modell nincs beállítva |
 | 6 | React frontend | Zoli | **kész, helyben ellenőrizve** | főoldal, hitelesítés/megerősítés, demófelület és ajánlatkérés; 19 frontendteszt; élő AI-próba továbbra is halasztva |
-| 7 | Portfólió | közösen | nincs elkezdve | |
+| 7 | Portfólió | közösen | **technikai rész kész; szövegjóváhagyás nyitott** | szűrhető lista és esettanulmány-sablon kész; Zoli a Pixi saját oldalát választotta; 26 frontendteszt sikeres |
 | 8 | Minőség és indítás | közösen | nincs elkezdve | |
 
 ---
@@ -73,9 +73,9 @@
 
 ## Következő lépés
 
-7. szakasz: saját portfólióanyag és esettanulmányok. Ehhez a valódi projektanyagokat, logót és végleges elérhetőségeket még pótolni kell. A 6. szakasz React felülete helyben elkészült: http://localhost:8082/ . Végleges vizuális jóváhagyás és a 8. szakasz teljes minőségellenőrzése/élesítése még hátravan.
+A 7. szakasz technikai része kész: portfóliólista és szűrés a főoldalon és a /portfolio útvonalon; a választott Pixi saját bemutatóprojekt esettanulmányának szövege elkészült a /portfolio/pixi-weboldal oldalon. A projekt kiválasztását Zoli jóváhagyta, az elkészült szöveg végső jóváhagyása még nyitott. Design és végleges kontaktadatok továbbra is pótlandók.
 
-Az 5. szakasz élő Claude-próbája Zoli kérésére halasztva marad. A React demófelület emiatt jelenleg tájékoztatást mutat és nem indít AI-hívást. Az élő szolgáltatás és a demóeredmény teljes valódi felhasználói útja csak később igazolható. Új szakasz felhasználói kérésre indul.
+Következő technikai szakasz: 8., minőségellenőrzés. Nyilvános élesítéshez még szükséges a végleges domain/HTTPS, éles levelezés és tartalmi/designjóváhagyás. Az 5. szakasz élő Claude-próbája Zoli kérésére halasztva marad; a demó a frontendben kikapcsolt. Új szakasz felhasználói kérésre indul.
 
 ## 2026-11-16 – 2. szakasz: tesztek és API-alap
 
@@ -165,3 +165,19 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - Képernyőképek: pixi-web/docs/preview/pixi-stage6-desktop.jpg és pixi-web/docs/preview/pixi-stage6-mobile.jpg. A böngészőben a kész helyi főoldal megnyitva maradt.
 - Git: `01901c6` — `feat: add integrated React frontend and email verification pages`, a main ágra feltöltve. A napló és HTML-terv frissítése azonos tartalmú helyi/docs példányokkal követi.
 - A 6. szakasz technikai megvalósítása kész. Az 5. szakasz élő elfogadása, a végleges kontakt-/designanyagok, éles SMTP és a 8. szakasz minőségi/élesítési feladatai még nyitottak.
+
+## 2026-11-16 – 7. szakasz: portfólió és első esettanulmány
+
+- Zoli kérésére folytattuk a projektet. Külön kérdésre az első valódi esettanulmánynak **a Pixi saját weboldalát** választotta. A helyi minta/ képei korábbi designreferenciák; nem használtuk őket saját ügyfélmunkaként.
+- Közös adatforrás: frontend/src/data/portfolio.js. A Portfolio komponens a főoldalon és külön /portfolio oldalon is működik; új Munkáink menüpont. Kategóriák: összes/web/AI és automatizáció/design. A saját Pixi projekt web/design kategóriákban szerepel; az AI-kategóriában jelenleg üres állapot látszik.
+- A szűrőgombok aria-pressed állapotot, a találatszám status visszajelzést kapott. Üres kategóriából egy gomb visszaállítja az összes projektet. Egyetlen projekt kiemelt, széles elrendezést kap; több projekt kétoszlopos listába rendezhető, mobilon egy oszlop.
+- Újrahasznosítható CaseStudy oldal: /portfolio/:slug; első példa /portfolio/pixi-weboldal. Probléma → megoldás → eredmény, saját asztali/mobil képernyőkép, fejlesztési bizonyítékok, külön korlátok/nyitott feladatok és ajánlatkérési hivatkozás. Ismeretlen slughoz érthető üres/404-szerű felület és visszalink tartozik.
+- A Pixi saját, fejlesztés alatt álló bemutatóprojektként szerepel. Az ellenőrzési számok a 6. szakasz lezárásához kötött fejlesztési bizonyítékok; nem állítunk ügyféloldali üzleti javulást, megtérülést vagy éles AI-működést.
+- A szöveg elkészült és megtekinthető. A projektválasztás felhasználói jóváhagyása megtörtént, **az elkészült esettanulmány szövegének végső jóváhagyása még nyitott**. A HTML-terv megfelelő ellenőrzőnégyzete emiatt nem lesz késznek jelölve.
+- Ellenőrzés: **26 frontendteszt sikeres** (7 új portfólióteszttel); Vite build és whitespace rendben. Szűrés/üres kategória/visszaállítás, főoldali elérés, részletoldal és lapcím, közvetlen URL, hibás slug, projektadatok következetessége tesztelve.
+- A korábbi kijelentkezési teszt túl általános status célzását pontosítottuk: most a portfólió találatszáma is status szerepkört használ. Nem alkalmazáshiba volt; a teljes frontendcsomag újra zöld.
+- Backendkód nem módosult; ebben a szakaszban a backendteszteket nem ismételtük. A legutóbbi igazolt eredmény továbbra is 89 backendteszt / 484 assertion a 6. szakaszból.
+- Valódi böngészős ellenőrzés: lista, szűrés és visszaállítás, esettanulmány megnyitása, mélylink közvetlen frissítése. 390 pixeles nézetben a portfólió és a részletoldal sem lógott túl vízszintesen. A kész esettanulmány megnyitva maradt a böngészőben.
+- Képernyőképek: docs/preview/pixi-stage7-portfolio.jpg és docs/preview/pixi-stage7-case-mobile.jpg. A bemutatott projektfotók a 6. szakasz valódi helyi képernyőképei, frontend/public/images/ alatt.
+- Git: `26a4f9e` — `feat: add filterable portfolio and Pixi case study`, a main ágra feltöltve (`bfadf9e..26a4f9e`). A két folyamatdokumentum helyi és docs/ másolata együtt frissül.
+- Élő Claude-próba, fizetős hívás és nyilvános élesítés nem történt. Továbbra is nyitott a tartalmi/designjóváhagyás, végleges kontaktadatok, éles SMTP és a 8. szakasz minőségellenőrzése/indítása.

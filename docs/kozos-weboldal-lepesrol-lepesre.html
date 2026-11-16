@@ -330,12 +330,22 @@ updateRemaining(response.meta.demo_uses_left);</code></pre>
 
 <h3>Lépések</h3>
 <ul class="steps">
-  <li><input type="checkbox"><div>Esettanulmány-sablon: probléma → megoldás → eredmény<div class="verify"><strong>Kész, ha:</strong> a párod designjával egységes.</div></div></li>
-  <li><input type="checkbox"><div>Az első valódi példa kiválasztása (ugyanaz a probléma, mint a demóban)<div class="verify"><strong>Kész, ha:</strong> a példa szövege elkészült és jóváhagyott.</div></div></li>
-  <li><input type="checkbox"><div>Portfólió-lista és szűrés a főoldalon<div class="verify"><strong>Kész, ha:</strong> a főoldalról egy kattintással elérhető.</div></div></li>
+  <li><input type="checkbox" checked><div>Esettanulmány-sablon: probléma → megoldás → eredmény<div class="verify"><strong>Kész, ha:</strong> a párod designjával egységes.</div></div></li>
+  <li><input type="checkbox"><div>Az első valódi példa kiválasztása és szövegének jóváhagyása (választott saját bemutatóprojekt: Pixi weboldal)<div class="verify"><strong>Kész, ha:</strong> a példa szövege elkészült és jóváhagyott. A Pixi kiválasztását Zoli jóváhagyta; a szöveg elkészült, végső tartalmi jóváhagyása még nyitott.</div></div></li>
+  <li><input type="checkbox" checked><div>Portfólió-lista és szűrés a főoldalon<div class="verify"><strong>Kész, ha:</strong> a főoldalról egy kattintással elérhető.</div></div></li>
 </ul>
 
-<div class="question"><strong>Kérdés:</strong> melyik valódi ügyfél- vagy bemutató-projekt legyen az első esettanulmány?</div>
+<div class="verify"><strong>Döntés:</strong> Zoli a Pixi saját weboldalát választotta. Saját bemutatóprojekt, nem ügyfélmunka; kitalált üzleti eredmények nélkül.</div>
+
+<div class="verify"><strong>2026-11-16 – 7. szakasz technikai része kész.</strong> 26 frontendteszt és a Vite build sikeres. A backend nem változott; legutóbbi igazolt eredménye 89 teszt / 484 assertion a 6. szakaszból. A választott első projekt Pixi; az elkészült szöveg végső jóváhagyása még nyitott.</div>
+<p><strong>Megtekintés:</strong> <a href="http://localhost:8082/portfolio">Munkáink</a> és <a href="http://localhost:8082/portfolio/pixi-weboldal">Pixi-esettanulmány</a>. A lista a főoldalon is megtalálható. Az AI-kategória jelenleg üres, mert az élő AI-próba halasztva maradt.</p>
+<p><strong>Elkészült:</strong> közös projektadatok, újrahasznosítható sablon, kategóriaszűrés és visszaállítás, találatszám, közvetlen részletlink és hibás slug kezelése. A Pixi-eset kihívás → megoldás → igazolt fejlesztési eredmény felépítésű, külön nyitott feladatokkal.</p>
+<p><strong>Böngészős ellenőrzés:</strong> lista, szűrés, üres kategória és visszaállítás, részletoldal és közvetlen frissítés; 390 pixeles mobilnézet túlcsordulás nélkül. Saját, a 6. szakaszban készített valódi képernyőképek kerültek a projektbe.</p>
+<p><strong>Git:</strong> <code>26a4f9e</code> feltöltve a main ágra. A képernyőképek docs/preview/ alatt, a szerkeszthető projektadatok frontend/src/data/portfolio.js alatt találhatók.</p>
+<h3>A szűrés lényegi kódja</h3><pre><code>const visible = selected === &#x27;all&#x27;
+  ? projects
+  : projects.filter((project) =&gt; project.categories.includes(selected));</code></pre>
+<p><strong>Nyitott:</strong> a szöveg és a design végső jóváhagyása, végleges kontaktadatok, élő AI-próba, éles SMTP és a 8. szakasz minőségellenőrzése/élesítése.</p>
 
 <h2 id="s8">8. Minőség és indítás</h2>
 <p class="sub">Felelős: közösen. Cél: a premium minőség ellenőrzése indulás előtt.</p>
@@ -359,7 +369,7 @@ updateRemaining(response.meta.demo_uses_left);</code></pre>
   <li>Mobilon megszakadt elküldés az űrlapnál: az adat ne vesszen el.</li>
 </ol>
 
-<div class="verify"><strong>Aktuális állapot (2026-11-16):</strong> a 2., 3., 4. és 6. szakasz technikai megvalósítása kész. Az 5. szakasz kódja/tesztjei kész, élő Claude-próba halasztva. Következő: 7. szakasz, saját portfólióanyagok. Végleges kontaktadatok, designjóváhagyás és élesítés még hátravan.</div>
+<div class="verify"><strong>Aktuális állapot (2026-11-16):</strong> a 2., 3., 4. és 6. szakasz technikai megvalósítása kész. Az 5. szakasz kódja/tesztjei kész, élő Claude-próba halasztva. A 7. szakasz technikai része és az első Pixi-esettanulmány szövege kész; végső szöveg-/designjóváhagyás nyitott. Következő technikai szakasz: 8., minőségellenőrzés. Kontaktadatok és élesítés még hátravan.</div>
 
 </main>
 </body>
