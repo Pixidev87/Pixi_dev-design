@@ -280,3 +280,17 @@ Eredmény: **19 frontendteszt sikeres, 89 backendteszt / 484 assertion sikeres**
 Valódi böngészős próba Nginxen: 1280-as asztali és 390-es mobilnézet; mobilos ajánlat mentése (#2) és Mailpit-visszaigazolása; helyi tesztfiók regisztrálása, levél megerősítése, 5/5 keret megjelenése, letiltott élő demó, kijelentkezés. A megjelölt helyi minták megmaradtak; a tesztfiókból kijelentkeztünk. Fizetős AI-hívás nem történt. A demó sikeres eredményből történő előkitöltése komponens- és backendteszttel igazolt; sikeres élő Claude-válasszal még nem.
 
 Képernyőképek: [asztali főoldal](docs/preview/pixi-stage6-desktop.jpg), [mobil főoldal](docs/preview/pixi-stage6-mobile.jpg). Még hátravan: végleges kontaktadatok, saját referenciaanyagok és a külön designjóváhagyás, az élő AI-próba, éles SMTP, valamint a 8. szakasz teljes minőségellenőrzése/élesítése.
+
+## Portfólió és esettanulmányok (7. szakasz)
+
+A főoldalon beágyazott, a menüből külön is elérhető portfólió: `/portfolio`. Az első, felhasználó által kiválasztott saját projekt a Pixi weboldala: `/portfolio/pixi-weboldal`. Az esettanulmány szövege elkészült; a végső tartalmi jóváhagyás még nyitott.
+
+A `frontend/src/data/portfolio.js` tartalmazza a strukturált projektadatokat. A közös `Portfolio` komponens szűri és megjeleníti őket, a `CaseStudy` oldal a slug alapján ugyanebből a forrásból épül. Új projekthez egyedi slug, cím, kategóriák, saját képernyőképek, probléma/megoldás/eredmény, ellenőrizhető bizonyíték és a még nyitott korlátok adhatók meg. Nem készítettünk külön adatbázist vagy adminfelületet a statikus tartalomhoz.
+
+Kategóriák: összes, webfejlesztés, AI és automatizáció, design és UX/UI. A Pixi jelenleg a web/design kategóriákban szerepel; az élő AI-bekötés halasztása miatt nincs AI-referenciának feltüntetve. Üres kategóriánál érthető visszajelzés és visszaállító gomb jelenik meg. A szűrőgombok aria-pressed állapota és a találatszám élő státusza segíti a használatot. Egyetlen projekt kiemelt elrendezést, több projekt kétoszlopos listát kap; mobilon egy oszlop látszik.
+
+Az első esettanulmány saját bemutatóprojektként, fejlesztés alatt álló helyi alkalmazásként jelöli a Pixit. Valódi, a 6. szakaszban készített asztali és mobilképernyőképet mutat. A tesztadatokat időponthoz/szakaszhoz kötve közli, és külön jelzi, hogy ezek fejlesztési bizonyítékok, nem üzleti eredmények. Nincs ügyfélnek tulajdonított munka, kitalált megtérülés vagy elkészültként feltüntetett élő AI-integráció.
+
+Ellenőrzés: **26 frontendteszt sikeres**, Vite build és whitespace rendben. A tesztek a főoldali és menübeli elérést, a szűrőket és üres állapotot, a részletoldal tartalmát és címét, a közvetlen URL-t, az ismeretlen projektet és az adatszerződést is ellenőrzik. Egy korábbi kijelentkezési teszt célzását pontosítottuk, mert most már a találatszám is status szerepkörrel rendelkezik. Backendváltozás nem történt; a 6. szakaszban igazolt 89 backendteszt / 484 ellenőrzés eredménye változatlan előzmény.
+
+Valódi böngészős ellenőrzés: szűrés és visszaállítás, részletoldal megnyitása, közvetlen oldalfrissítés, valamint 390 pixeles mobilnézet túlcsordulás nélkül. Képek: `docs/preview/pixi-stage7-portfolio.jpg` és `docs/preview/pixi-stage7-case-mobile.jpg`. Az élő AI továbbra is kikapcsolt; nyilvános élesítés nem történt. A következő tervezett szakasz a 8. szakasz minőségellenőrzése; a tartalmi és designjóváhagyás, végleges kontaktadatok és az éles szolgáltatások még hátravannak.

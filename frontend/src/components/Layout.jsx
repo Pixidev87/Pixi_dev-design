@@ -6,6 +6,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { projects } from "../data/portfolio";
 import { useAuth } from "../auth";
 
 export default function Layout() {
@@ -26,11 +27,15 @@ export default function Layout() {
     const titles = {
       "/": "Web, AI és design",
       "/demo": "AI-demó",
+      "/portfolio": "Munkáink",
       "/ajanlat": "Ajánlatkérés",
       "/belepes": "Bejelentkezés",
       "/regisztracio": "Regisztráció",
     };
-    document.title = `${titles[location.pathname] || (location.pathname.startsWith("/megerosites/") ? "E-mail-megerősítés" : "Oldal nem található")} — Pixi`;
+    const project = projects.find(
+      (item) => location.pathname === `/portfolio/${item.slug}`,
+    );
+    document.title = `${project?.title || titles[location.pathname] || (location.pathname.startsWith("/megerosites/") ? "E-mail-megerősítés" : "Oldal nem található")} — Pixi`;
   }, [location.pathname, location.hash]);
   async function exit() {
     setBusy(true);
@@ -72,6 +77,7 @@ export default function Layout() {
             aria-label="Fő navigáció"
           >
             <Link to="/#szolgaltatasok">Szolgáltatások</Link>
+            <NavLink to="/portfolio">Munkáink</NavLink>
             <NavLink to="/demo">AI-demó</NavLink>
             <NavLink to="/ajanlat">
               Ajánlatkérés <span aria-hidden="true">↗</span>

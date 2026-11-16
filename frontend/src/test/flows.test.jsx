@@ -233,9 +233,9 @@ describe("visitor flows", () => {
     await login(user);
     await screen.findByLabelText("Mi veszi el most a legtöbb idődet?");
     await user.click(screen.getByRole("button", { name: "Kilépés" }));
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Sikeresen kijelentkeztél.",
-    );
+    expect(
+      await screen.findByText("Sikeresen kijelentkeztél."),
+    ).toBeInTheDocument();
     expect(
       mock.mock.calls.find(([url]) => url.endsWith("/logout"))[1].headers
         .Authorization,

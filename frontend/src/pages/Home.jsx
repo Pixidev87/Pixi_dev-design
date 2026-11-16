@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Portfolio from "../components/Portfolio";
 import { demoAvailable } from "../settings";
 
 const services = [
@@ -135,6 +136,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Portfolio />
       <section className="section concept-section">
         <div className="container concept-grid">
           <div className="concept-art" aria-hidden="true">
@@ -170,8 +172,8 @@ export default function Home() {
               naptár, automatikus visszaigazolás.
             </p>
             <p className="small-note">
-              Szemléltető példa, nem ügyfélreferencia. Saját esettanulmányaink
-              hamarosan érkeznek.
+              Szemléltető példa, nem ügyfélreferencia. A saját
+              megvalósításainkat fent, a munkáink között mutatjuk be.
             </p>
             <Link className="text-link" to="/demo">
               Nézzük meg a te problémádat <span aria-hidden="true">↗</span>

@@ -1,5 +1,7 @@
 import { Link, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth";
+import Portfolio from "./components/Portfolio";
+import CaseStudy from "./pages/CaseStudy";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import AuthPage from "./pages/Auth";
@@ -13,6 +15,8 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="portfolio" element={<Portfolio standalone />} />
+          <Route path="portfolio/:slug" element={<CaseStudy />} />
           <Route path="belepes" element={<AuthPage key="login" />} />
           <Route
             path="regisztracio"
