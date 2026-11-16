@@ -45,12 +45,14 @@ while (! file_exists(getenv('PIXI_TEST_DIRECTORY').'/start')) {
     usleep(10000);
 }
 
-$request = Request::create('/api/v1/demo', 'POST', server: [
+$isInquiry = getenv('PIXI_TEST_KIND') === 'inquiry';
+$payload = $isInquiry ? ['name' => 'Teszt', 'email' => 'test@example.com', 'description' => 'Párhuzamos ajánlatkérés tesztje.'] : ['prompt' => 'Párhuzamos kérések biztonságos ellenőrzése.'];
+$request = Request::create($isInquiry ? '/api/v1/inquiries' : '/api/v1/demo', 'POST', server: [
     'HTTP_ACCEPT' => 'application/json',
     'CONTENT_TYPE' => 'application/json',
     'HTTP_AUTHORIZATION' => 'Bearer '.getenv('PIXI_TEST_TOKEN'),
     'HTTP_IDEMPOTENCY_KEY' => getenv('PIXI_TEST_KEY'),
-], content: json_encode(['prompt' => 'Párhuzamos kérések biztonságos ellenőrzése.']));
+], content: json_encode($payload));
 $response = $kernel->handle($request);
 echo json_encode(['status' => $response->getStatusCode()]);
 $kernel->terminate($request, $response);

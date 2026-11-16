@@ -7,6 +7,12 @@ use Illuminate\Validation\Rule;
 
 class StoreInquiryRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $key = $this->header('Idempotency-Key');
+        $this->merge(['idempotency_key' => is_string($key) ? strtolower($key) : null]);
+    }
+
     public function authorize(): bool
     {
         if ($this->filled('demo_session_id')) {
@@ -27,6 +33,7 @@ class StoreInquiryRequest extends FormRequest
             'description' => ['required', 'string', 'max:5000'],
             'demo_session_id' => ['nullable', 'integer', Rule::exists('demo_sessions', 'id')->where('user_id', $this->user('sanctum')?->id ?? 0)],
             'status' => ['prohibited'],
+            'idempotency_key' => ['nullable', 'uuid'],
         ];
     }
 

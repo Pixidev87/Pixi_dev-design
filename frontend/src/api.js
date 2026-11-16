@@ -10,7 +10,7 @@ export class ApiError extends Error {
       409: "Ez a kérés már másik szöveghez tartozik. Módosítsd a leírást, és próbáld újra.",
       422: "Ellenőrizd a megjelölt mezőket.",
       429: "Most túl sok kérés érkezett. Várj egy percet, és próbáld újra.",
-      502: "Nem érkezett teljes elemzés. A kereted nem csökkent. Próbáld újra később.",
+      502: "A válasz nem volt feldolgozható. Próbáld újra később.",
       503: "A szolgáltatás átmenetileg nem érhető el. Próbáld újra később.",
     };
     super(messages[status] ?? "Átmeneti hiba történt. Próbáld újra később.");

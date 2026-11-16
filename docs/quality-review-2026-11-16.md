@@ -1,0 +1,11 @@
+## 2026-11-16 – 8. szakasz: helyi minőségellenőrzés és School Management képek
+
+- Felhasználói döntés: kizárólag helyi minőségellenőrzés; élő Claude-próba és nyilvános élesítés nem történt.
+- Korábbi ellenőrzési kör: 50 frontendteszt, 93 backendteszt / 511 assertion; Vite build és Pint sikeres. npm production audit és Composer audit nem jelzett ismert sérülékenységet.
+- Ajánlatküldés: opcionális UUID Idempotency-Key, payload-ütközésre 409; hat párhuzamos azonos kérés egy ajánlatot és egy levélfeladatot eredményezett. Régi, kulcs nélküli kérések továbbra is új ajánlatot hoznak létre.
+- Az ajánlatpiszkozat sessionStorage-ban, 60 perces élettartammal megmarad; sikeres küldés, ürítés vagy kijelentkezés törli. Token és jelszó nem kerül ide. Mobilos böngészőpróbán frissítés után visszaállt, elküldés után kiürült; Mailpitben egy visszaigazolás érkezett.
+- Mobilmenü Escape bezárással és fókusz-visszaadással; olvashatóbb kis kiemelőszövegek, beviteli keretek és fókuszjelölések. Kilenc útvonal automatizált axe DOM-ellenőrzése és külön kontrasztszámítás; ez nem teljes WCAG-minősítés. Hálózati hibák komponensteszttel szimulálva, valós mobilhálózati teljesítménymérés nem történt.
+- Nginx CSP, nosniff és Referrer-Policy fejlécek ellenőrizve. Éles proxy/IP-kezelés, HTTPS, SMTP, végleges kontaktadatok és szöveg/designjóváhagyás továbbra is nyitott. Ez helyi ellenőrzés, nem teljes biztonsági audit.
+- School Management: a /Users/pixidev/Desktop/school/ képei megtekintve; áttekintő, osztályok és jelenlét felhasználásával modern Pixi-arculatú kollázs készült a beépített imagegen eszközzel. Fájl: frontend/public/images/school-management-showcase.png. A korábbi SVG helyett ezt használja a portfólió és a részletoldal. A képaláírás egyértelműen jelzi az AI-val szerkesztett összeállítást; nem állítunk független School Management futtatási vagy üzleti eredményt.
+- Képgenerálási brief: fekvő modern portfóliókollázs, eredeti kék-fehér alkalmazásfelületek; törtfehér háttér, antracit cím, mustár/petrol hangsúlyok; fő áttekintő és két kiegészítő panel. Cím: School Management; alcím: Iskolai adminisztráció egy felületen. Kitalált rekordok és grafikonok nélkül.
+- A 8. szakasz helyi ellenőrzési köre lezárható; teljes élesítési szakasz továbbra is részleges.

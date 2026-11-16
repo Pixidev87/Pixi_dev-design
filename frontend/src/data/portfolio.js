@@ -40,14 +40,14 @@ export const projects = [
     title: "School Management — iskolai adminisztráció",
     subtitle: "Összekapcsolt iskolai folyamatok egy webalkalmazásban.",
     kind: "Saját fejlesztési projekt",
-    status: "Forráskód alapján bemutatva · élő próba nélkül",
+    status: "Forráskód és saját képernyőképek alapján",
     year: "2026",
     categories: ["web"],
-    cover: "/images/school-management.svg",
+    cover: "/images/school-management-showcase.png",
     coverAlt:
-      "School Management: a forráskódban azonosított iskolai modulok szemléltető térképe, nem alkalmazás-képernyőkép.",
+      "School Management bemutatókollázs: áttekintő, osztályok és jelenlét képernyők.",
     coverCaption:
-      "Szemléltető modultérkép a repository alapján; nem az alkalmazás képernyőképe.",
+      "AI-val szerkesztett bemutatókollázs a saját alkalmazásképeinkből; nem változtatás nélküli képernyőkép.",
     description:
       "Iskolai adminisztráció React felülettel és Laravel API-val: diákok, tanárok, jelenlét, órarend és kapcsolódó intézményi modulok.",
     problem:
@@ -63,9 +63,9 @@ export const projects = [
       "A függőségfájlok React, Vite, Bootstrap, React Query, Laravel és Sanctum használatát jelzik.",
     ],
     evidenceNote:
-      "Forráskód-áttekintés: 2026-11-16. A felsorolás nem helyettesít futtatást vagy funkcionális tesztet.",
+      "Forráskód-áttekintés és átadott képernyőképek: 2026-11-16. A felsorolás nem helyettesít futtatást vagy funkcionális tesztet.",
     limits:
-      "A projektet most nem telepítettük és nem futtattuk. Éles elérhetőséget, tesztlefedettséget, valós intézményi alkalmazást és üzleti eredményeket nem igazoltunk. A bemutató grafika illusztráció; saját alkalmazás-képernyőképpel később cserélhető.",
+      "A projektet most nem telepítettük és nem futtattuk. Éles elérhetőséget, tesztlefedettséget, valós intézményi alkalmazást és üzleti eredményeket nem igazoltunk. A bemutatókollázs a felhasználó által átadott alkalmazásképek AI-val szerkesztett összeállítása.",
     stack: ["React", "Vite", "Bootstrap", "React Query", "Laravel", "Sanctum"],
     modules: [
       "Diákok és tanárok",

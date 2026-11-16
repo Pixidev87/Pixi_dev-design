@@ -140,7 +140,7 @@ it("renders School Management without Pixi-specific mobile or test claims", () =
     screen.getByText(/A projektet most nem telepítettük és nem futtattuk/),
   ).toBeInTheDocument();
   expect(
-    screen.getByText(/nem az alkalmazás képernyőképe/),
+    screen.getByText(/AI-val szerkesztett bemutatókollázs/),
   ).toBeInTheDocument();
   expect(screen.queryByText(/19 frontendteszt/)).not.toBeInTheDocument();
   expect(

@@ -1,24 +1,73 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth";
+import {
+  clearInquiryDraft,
+  loadInquiryDraft,
+  saveInquiryDraft,
+} from "../inquiryDraft";
 import { Feedback, Field } from "../components/Forms";
 
 export default function InquiryPage() {
   const { state } = useLocation();
   const { session, api } = useAuth();
+  const [draft] = useState(loadInquiryDraft);
+  const [form, setForm] = useState(() =>
+    state?.description
+      ? {
+          name: session.user?.name || "",
+          email: session.user?.email || "",
+          description: state.description,
+        }
+      : draft?.form || {
+          name: session.user?.name || "",
+          email: session.user?.email || "",
+          description: "",
+        },
+  );
+  const [metadata, setMetadata] = useState(
+    state?.demoSessionId ? state : draft?.metadata || null,
+  );
+  const pending = useRef(state?.description ? null : draft?.pending || null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(null);
-  const attached = state?.demoSessionId && state.ownerId === session.user?.id;
+  const attached =
+    metadata?.demoSessionId && metadata.ownerId === session.user?.id;
+  useEffect(() => {
+    if (saved) clearInquiryDraft();
+    else saveInquiryDraft(form, pending.current, metadata);
+  }, [form, metadata, saved]);
+  function change(field) {
+    return (event) =>
+      setForm((value) => ({ ...value, [field]: event.target.value }));
+  }
+  function reset() {
+    clearInquiryDraft();
+    pending.current = null;
+    setMetadata(null);
+    setForm({ name: "", email: "", description: "" });
+    setError(null);
+  }
   async function submit(event) {
     event.preventDefault();
     if (busy || saved) return;
-    const data = Object.fromEntries(new FormData(event.currentTarget));
-    if (attached) data.demo_session_id = state.demoSessionId;
+    const data = Object.fromEntries(
+      Object.entries(form).map(([key, value]) => [key, value.trim()]),
+    );
+    if (attached) data.demo_session_id = metadata.demoSessionId;
+    const payload = JSON.stringify(data);
+    if (!pending.current || pending.current.payload !== payload)
+      pending.current = { key: crypto.randomUUID(), payload };
+    saveInquiryDraft(form, pending.current, metadata);
     setBusy(true);
     setError(null);
     try {
-      const response = await api("/inquiries", { method: "POST", data });
+      const response = await api("/inquiries", {
+        method: "POST",
+        data,
+        idempotencyKey: pending.current.key,
+      });
       setSaved(response.data);
     } catch (error) {
       setError(error);
@@ -88,7 +137,9 @@ export default function InquiryPage() {
                   autoComplete="name"
                   required
                   maxLength={150}
-                  defaultValue={session.user?.name || ""}
+                  value={form.name}
+                  onChange={change("name")}
+                  disabled={busy}
                   error={error?.fields?.name}
                 />
                 <Field
@@ -98,7 +149,9 @@ export default function InquiryPage() {
                   autoComplete="email"
                   required
                   maxLength={254}
-                  defaultValue={session.user?.email || ""}
+                  value={form.email}
+                  onChange={change("email")}
+                  disabled={busy}
                   error={error?.fields?.email}
                 />
                 <Field
@@ -108,7 +161,9 @@ export default function InquiryPage() {
                   rows={7}
                   required
                   maxLength={5000}
-                  defaultValue={state?.description || ""}
+                  value={form.description}
+                  onChange={change("description")}
+                  disabled={busy}
                   error={error?.fields?.description}
                 />
                 <p className="small-note">
@@ -118,6 +173,19 @@ export default function InquiryPage() {
                 <button className="button dark full" disabled={busy}>
                   {busy ? "Küldés folyamatban…" : "Elküldöm az ötletem ↗"}
                 </button>
+                <button
+                  type="button"
+                  className="draft-reset"
+                  disabled={busy}
+                  onClick={reset}
+                >
+                  Űrlap ürítése
+                </button>
+                <p className="small-note">
+                  A piszkozatot ezen a böngészőlapon ideiglenesen, legfeljebb
+                  egy óráig őrizzük meg. Sikeres küldéskor vagy kijelentkezéskor
+                  töröljük.
+                </p>
               </form>
             </>
           )}

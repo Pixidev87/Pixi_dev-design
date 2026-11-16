@@ -12,7 +12,7 @@ class InquiryController extends Controller
     public function __invoke(StoreInquiryRequest $request, InquiryService $service): InquiryResource
     {
         return new InquiryResource($service->create($request->safe()->only([
-            'name', 'email', 'description', 'demo_session_id',
+            'name', 'email', 'description', 'demo_session_id', 'idempotency_key',
         ])));
     }
 }

@@ -63,7 +63,12 @@ class DemoConcurrencyTest extends TestCase
         }
     }
 
-    private function assertParallelRequests(bool $sameKey): void
+    public function test_parallel_inquiry_retries_create_one_record_and_one_email_job(): void
+    {
+        $this->assertParallelRequests(true, 'inquiry');
+    }
+
+    private function assertParallelRequests(bool $sameKey, string $kind = 'demo'): void
     {
         $user = User::factory()->create();
         $user->forceFill(['demo_uses_left' => 1])->save();
@@ -79,6 +84,7 @@ class DemoConcurrencyTest extends TestCase
                     'APP_ENV' => 'testing', 'DB_DATABASE' => 'testing', 'DB_URL' => '',
                     'PIXI_TEST_DIRECTORY' => $directory, 'PIXI_TEST_TOKEN' => $token,
                     'PIXI_TEST_KEY' => $sameKey ? $sharedKey : (string) Str::uuid(),
+                    'PIXI_TEST_KIND' => $kind,
                 ]);
                 $process->setTimeout(20);
                 $process->start();
@@ -99,9 +105,16 @@ class DemoConcurrencyTest extends TestCase
             }
             sort($statuses);
             $this->assertSame($sameKey ? [200, 200, 200, 200, 200, 201] : [201, 403, 403, 403, 403, 403], $statuses);
-            $this->assertSame(0, $user->fresh()->demo_uses_left);
-            $this->assertDatabaseCount('demo_sessions', 1);
-            $this->assertSame("called\n", file_get_contents($directory.'/calls'));
+            if ($kind === 'inquiry') {
+                $this->assertDatabaseCount('inquiries', 1);
+                $this->assertDatabaseCount('jobs', 1);
+                $this->assertSame(1, $user->fresh()->demo_uses_left);
+                $this->assertFileDoesNotExist($directory.'/calls');
+            } else {
+                $this->assertSame(0, $user->fresh()->demo_uses_left);
+                $this->assertDatabaseCount('demo_sessions', 1);
+                $this->assertSame("called\n", file_get_contents($directory.'/calls'));
+            }
         } finally {
             foreach ($processes as $process) {
                 if ($process->isRunning()) {

@@ -92,7 +92,7 @@ export default function DemoPage() {
       setResult(response.data);
       updateRemaining(response.meta.demo_uses_left);
     } catch (error) {
-      if (error.status === 503)
+      if (error.status === 503 || error.status === 502)
         error.message =
           "A demó most nem érhető el. A kereted nem csökkent. Addig is kérhetsz személyre szabott ajánlatot.";
       setError(error);

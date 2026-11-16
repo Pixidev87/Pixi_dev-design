@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { clearInquiryDraft } from "./inquiryDraft";
 import { request } from "./api";
 
 const AuthContext = createContext(null);
@@ -65,6 +66,7 @@ export function AuthProvider({ children }) {
     try {
       if (current.current.token) await api("/logout", { method: "POST" });
     } finally {
+      clearInquiryDraft();
       clear();
     }
   }, [api, clear]);

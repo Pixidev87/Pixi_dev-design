@@ -75,6 +75,12 @@ export default function Layout() {
             id="navigation"
             className={menu ? "is-open" : ""}
             aria-label="Fő navigáció"
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setMenu(false);
+                document.querySelector(".menu-toggle")?.focus();
+              }
+            }}
           >
             <Link to="/#szolgaltatasok">Szolgáltatások</Link>
             <NavLink to="/portfolio">Munkáink</NavLink>
