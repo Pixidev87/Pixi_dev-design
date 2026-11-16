@@ -50,7 +50,7 @@ Leállítás:
 
    ```bash
    cp .env.example .env
-   ``
+   ```
 
 2. Állítsd be a helyi adatbázis-, Redis- és levelezési adatokat a `.env` fájlban.
 3. Generálj alkalmazáskulcsot:
@@ -81,3 +81,22 @@ A design és a következő fejlesztési szakaszok jóváhagyása külön lépés
 ## Licenc
 
 A projekt licenceléséről később születik döntés.
+
+## API-alap (2. szakasz)
+
+A parancsokat a `pixi-web/backend` könyvtárból futtasd:
+
+```bash
+./vendor/bin/sail artisan test
+curl http://localhost:8082/api/v1/status
+```
+
+A `GET /api/v1/status` nyilvános végpont válasza:
+
+```json
+{"data":{"status":"ok","name":"Pixi web & webdesign","api_version":"v1"}}
+```
+
+A kérés útja: `routes/api.php` → `StatusController` → `StatusService` → JSON-válasz. A Controller a HTTP-válaszért, a Service az adatok összeállításáért felel. Ez alkalmazásstátusz, nem adatbázis- vagy Redis-állapotvizsgálat. Az ismeretlen API-útvonalak JSON-formátumú 404-es választ adnak. Model, Form Request és API Resource az ajánlatkérő funkciónál kap szerepet; ehhez az olvasási példához nem szükségesek.
+
+2026-11-16: Sailben 4 teszt és 10 assertion sikeres; Pint sikeres; az Nginxen keresztüli HTTP-próba sikeres. A két eredeti alapteszt önmagában nem teszteli az adatbázis-kapcsolatot. Laravel Boost fejlesztői függőség a projekt AGENTS.md előírása szerint telepítve.
