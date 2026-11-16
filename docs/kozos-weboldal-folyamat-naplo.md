@@ -26,7 +26,7 @@
 | 4 | Regisztráció és e-mail | Zoli | **kész** | Sanctum-token, aláírt megerősítés, újraküldés, kijelentkezés, kezdő 5-ös keret; 52 teszt / 306 assertion |
 | 5 | Demó és 5-használat-keret | Zoli | **kód és tesztek kész; élő próba halasztva** | 89 teszt / 484 assertion; MySQL párhuzamosság, idempotencia, saját demó–ajánlat kapcsolat kész; kulcs/modell nincs beállítva |
 | 6 | React frontend | Zoli | **kész, helyben ellenőrizve** | főoldal, hitelesítés/megerősítés, demófelület és ajánlatkérés; 19 frontendteszt; élő AI-próba továbbra is halasztva |
-| 7 | Portfólió | közösen | **technikai rész kész; szövegjóváhagyás nyitott** | szűrhető lista és esettanulmány-sablon kész; Zoli a Pixi saját oldalát választotta; 26 frontendteszt sikeres |
+| 7 | Portfólió | közösen | **technikai rész kész; szövegjóváhagyás nyitott** | szűrhető lista és két esettanulmány: Pixi + School Management; 28 frontendteszt sikeres; végső szövegjóváhagyás nyitott |
 | 8 | Minőség és indítás | közösen | nincs elkezdve | |
 
 ---
@@ -181,3 +181,17 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - Képernyőképek: docs/preview/pixi-stage7-portfolio.jpg és docs/preview/pixi-stage7-case-mobile.jpg. A bemutatott projektfotók a 6. szakasz valódi helyi képernyőképei, frontend/public/images/ alatt.
 - Git: `26a4f9e` — `feat: add filterable portfolio and Pixi case study`, a main ágra feltöltve (`bfadf9e..26a4f9e`). A két folyamatdokumentum helyi és docs/ másolata együtt frissül.
 - Élő Claude-próba, fizetős hívás és nyilvános élesítés nem történt. Továbbra is nyitott a tartalmi/designjóváhagyás, végleges kontaktadatok, éles SMTP és a 8. szakasz minőségellenőrzése/indítása.
+
+## 2026-11-16 – Portfólióbővítés: School Management
+
+- Kifejezett felhasználói kérés: a https://github.com/Pixidev87/school_management projekt felvétele a Pixi mellé, dokumentumok és fájlok frissítésével. A 8. szakaszt nem kezdtük el.
+- A nyilvános GitHub-repositoryt a kapcsolt GitHub eszközökkel olvastuk, nem módosítottuk. Források: school-management/package.json, composer.json, routes/api.php és resources/js/routes/AppRoutes.jsx. A README Laravel-alapértelmezett szöveg, ezért nem erre alapoztuk a funkcióleírást.
+- Igazolt forrásszerkezet: React/Vite/Bootstrap/React Query; Laravel/Sanctum; diákok, tanárok, osztályok, tantárgyak, jelenlét, órarend, vizsgák, díjak, könyvtár, közlekedés és értesítések moduljai. Egyes API-műveleteknél admin/tanár szerepkörellenőrzés látszik a forrásban.
+- Új projektkártya a főoldali és külön portfóliólistában; részletoldal: /portfolio/school-management. Saját fejlesztési projektként, forráskód alapján bemutatva szerepel, nem igazolt intézményi bevezetésként. GitHub- és konkrét forráslinkek a részletoldalon.
+- Webfejlesztési kategória: 2 projekt; design: 1 (Pixi); AI/automatizáció: 0. Nem állítunk AI-funkciót az iskolai projektről.
+- Saját SVG modultérkép készült, jelölt illusztrációként. Nem töltöttünk fel kitalált alkalmazás-képernyőképet vagy személyes iskolai adatot. Később valódi, anonimizált képernyőképpel cserélhető.
+- A közös CaseStudy sablon általánosítva: projektspecifikus eredménycím, ellenőrzési megjegyzés, forráslinkek és opcionális mobilkép/modullista. A Pixi teszteredményei és képei nem jelennek meg a School Management oldalán.
+- Ellenőrzés: **28 frontendteszt sikeres**, Vite build és git diff whitespace rendben. A kétprojekt-lista, szűrési darabszámok, GitHub-link és a Pixi-tartalom elkülönülése tesztelt. Backend nem változott; nem futtattunk új backendteszteket.
+- Valódi böngészős próba: a két kártya egymás mellett, saját iskolai részletoldal és forráslinkek; 390 pixeles mobilnézet vízszintes túlcsordulás nélkül. Kép: pixi-web/docs/preview/pixi-school-portfolio.jpg.
+- A School Management projektet most nem telepítettük vagy futtattuk; éles működés, tesztlefedettség és üzleti hatás nem igazolt. Az új szöveg végső tartalmi jóváhagyása nyitott. Élő Claude-próba és élesítés továbbra is halasztott/nyitott.
+- A módosítások a Pixi repositoryban kerülnek verziókövetésbe a frissített naplóval és HTML-tervvel együtt. A helyi és docs/ dokumentumpéldányok azonos tartalmúak.

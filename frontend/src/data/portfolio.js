@@ -35,4 +35,59 @@ export const projects = [
       "Az élő Claude-próba halasztva van, ezért az AI-demó jelenleg kikapcsolt. Éles SMTP, végleges kontaktadatok és nyilvános élesítés még nem készült el. Ez saját fejlesztési bemutató, nem ügyfélmunka; üzleti megtérülést vagy ügyféloldali javulást még nem mértünk.",
     stack: ["React", "Vite", "Laravel", "MySQL", "Redis", "Docker"],
   },
+  {
+    slug: "school-management",
+    title: "School Management — iskolai adminisztráció",
+    subtitle: "Összekapcsolt iskolai folyamatok egy webalkalmazásban.",
+    kind: "Saját fejlesztési projekt",
+    status: "Forráskód alapján bemutatva · élő próba nélkül",
+    year: "2026",
+    categories: ["web"],
+    cover: "/images/school-management.svg",
+    coverAlt:
+      "School Management: a forráskódban azonosított iskolai modulok szemléltető térképe, nem alkalmazás-képernyőkép.",
+    coverCaption:
+      "Szemléltető modultérkép a repository alapján; nem az alkalmazás képernyőképe.",
+    description:
+      "Iskolai adminisztráció React felülettel és Laravel API-val: diákok, tanárok, jelenlét, órarend és kapcsolódó intézményi modulok.",
+    problem:
+      "A diákok, tanárok, osztályok és tantárgyak nyilvántartása összefügg a jelenléttel, az órarenddel és a vizsgákkal. A projekt ezeket a kapcsolódó iskolai adminisztrációs területeket szervezi közös webalkalmazásba.",
+    solution:
+      "A React felülethez Laravel API és Sanctum-alapú hitelesítés kapcsolódik. Az útvonalak külön modulokat biztosítanak az alapnyilvántartásokhoz, a jelenléthez, az órarendhez és a vizsgákhoz. Díjkezelési, könyvtári, közlekedési és értesítési felületek is szerepelnek a forrásban; egyes API-műveleteket adminisztrátori vagy tanári szerepkör véd.",
+    result:
+      "A repositoryban megtalálhatók a modulok React-oldalai, API-útvonalai és Laravel controllerei. A portfólió a megvizsgált forráskód szerkezetét és funkcióit mutatja be. Élő működést, tesztfutási eredményt vagy intézményi használatot ebben az áttekintésben nem ellenőriztünk.",
+    resultTitle: "A forrásban megvalósított részek",
+    evidence: [
+      "A React útvonaltérkép diák-, tanár-, osztály-, tantárgy-, jelenléti, órarend- és vizsgafelületeket tartalmaz.",
+      "A Laravel API-ban díjak, könyvtár, közlekedés és értesítések kezelésére is vannak útvonalak.",
+      "A függőségfájlok React, Vite, Bootstrap, React Query, Laravel és Sanctum használatát jelzik.",
+    ],
+    evidenceNote:
+      "Forráskód-áttekintés: 2026-11-16. A felsorolás nem helyettesít futtatást vagy funkcionális tesztet.",
+    limits:
+      "A projektet most nem telepítettük és nem futtattuk. Éles elérhetőséget, tesztlefedettséget, valós intézményi alkalmazást és üzleti eredményeket nem igazoltunk. A bemutató grafika illusztráció; saját alkalmazás-képernyőképpel később cserélhető.",
+    stack: ["React", "Vite", "Bootstrap", "React Query", "Laravel", "Sanctum"],
+    modules: [
+      "Diákok és tanárok",
+      "Osztályok és tantárgyak",
+      "Jelenlét és órarend",
+      "Vizsgák és eredmények",
+      "Díjak és könyvtár",
+      "Közlekedés és értesítések",
+    ],
+    sources: [
+      {
+        label: "GitHub repository",
+        url: "https://github.com/Pixidev87/school_management",
+      },
+      {
+        label: "Laravel API-útvonalak",
+        url: "https://github.com/Pixidev87/school_management/blob/main/school-management/routes/api.php",
+      },
+      {
+        label: "React felületek útvonaltérképe",
+        url: "https://github.com/Pixidev87/school_management/blob/main/school-management/resources/js/routes/AppRoutes.jsx",
+      },
+    ],
+  },
 ];

@@ -51,13 +51,20 @@ export default function CaseStudy() {
           height="900"
           fetchPriority="high"
         />
+        {project.coverCaption && (
+          <p className="case-cover-caption">{project.coverCaption}</p>
+        )}
       </div>
       <section className="section">
         <div className="container case-story">
           {[
             ["01", "A kihívás", project.problem],
             ["02", "A megoldás", project.solution],
-            ["03", "A kézzelfogható eredmény", project.result],
+            [
+              "03",
+              project.resultTitle || "A kézzelfogható eredmény",
+              project.result,
+            ],
           ].map(([number, title, copy]) => (
             <div className="case-chapter" key={number}>
               <div>
@@ -75,38 +82,72 @@ export default function CaseStudy() {
               ))}
             </ul>
             <p className="small-note">
-              Fejlesztési ellenőrzések a 6. szakasz lezárásakor; nem üzleti
-              eredménymutatók.
+              {project.evidenceNote ||
+                "Fejlesztési ellenőrzések a 6. szakasz lezárásakor; nem üzleti eredménymutatók."}
             </p>
+            {project.sources && (
+              <>
+                <h3>Források és projektlink</h3>
+                <ul>
+                  {project.sources.map((source) => (
+                    <li key={source.url}>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {source.label} ↗
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       </section>
-      <section className="case-mobile-section">
-        <div className="container case-mobile-grid">
-          <img
-            src={project.mobile}
-            alt="A Pixi főoldala 390 pixeles mobilnézetben."
-            width="390"
-            height="844"
-            loading="lazy"
-          />
-          <div>
-            <p className="eyebrow">A KISEBB KÉPERNYŐ IS SZÁMÍT</p>
-            <h2>
-              Ugyanaz a karakter.
-              <br />
-              Más léptékben.
-            </h2>
-            <p>
-              A főoldalt asztali és mobilnézetben is ellenőriztük. Az
-              ajánlatkérést a mobilos felületről, a valódi helyi
-              háttérrendszerrel is végigpróbáltuk.
-            </p>
-            <h3>Ami még előttünk van</h3>
+      {project.mobile ? (
+        <section className="case-mobile-section">
+          <div className="container case-mobile-grid">
+            <img
+              src={project.mobile}
+              alt="A Pixi főoldala 390 pixeles mobilnézetben."
+              width="390"
+              height="844"
+              loading="lazy"
+            />
+            <div>
+              <p className="eyebrow">A KISEBB KÉPERNYŐ IS SZÁMÍT</p>
+              <h2>
+                Ugyanaz a karakter.
+                <br />
+                Más léptékben.
+              </h2>
+              <p>
+                A főoldalt asztali és mobilnézetben is ellenőriztük. Az
+                ajánlatkérést a mobilos felületről, a valódi helyi
+                háttérrendszerrel is végigpróbáltuk.
+              </p>
+              <h3>Ami még előttünk van</h3>
+              <p>{project.limits}</p>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="section case-source-section">
+          <div className="container case-story">
+            <p className="eyebrow">A PROJEKT FELÉPÍTÉSE</p>
+            <h2>Összekapcsolt modulok.</h2>
+            <ul className="case-module-list">
+              {project.modules?.map((module) => (
+                <li key={module}>{module}</li>
+              ))}
+            </ul>
+            <h3>A bemutató keretei</h3>
             <p>{project.limits}</p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
       <section className="section">
         <div className="container case-cta">
           <div>

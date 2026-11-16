@@ -43,16 +43,19 @@ it("filters with pressed states and recovers from an empty category", async () =
   await user.click(
     screen.getByRole("button", { name: "Összes munka mutatása" }),
   );
-  expect(screen.getByRole("status")).toHaveTextContent("1 bemutatott projekt");
+  expect(screen.getByRole("status")).toHaveTextContent("2 bemutatott projekt");
   expect(fetch).not.toHaveBeenCalled();
 });
 it("keeps the real project under web and design categories", async () => {
   const { user } = setup();
   const filters = screen.getByRole("group", { name: "Portfólió szűrése" });
-  for (const name of ["Webfejlesztés", "Design és UX/UI"]) {
+  for (const [name, count] of [
+    ["Webfejlesztés", 2],
+    ["Design és UX/UI", 1],
+  ]) {
     await user.click(within(filters).getByRole("button", { name }));
     expect(screen.getByRole("status")).toHaveTextContent(
-      "1 bemutatott projekt",
+      `${count} bemutatott projekt`,
     );
   }
 });
@@ -114,4 +117,33 @@ it("keeps case data consistent as more projects are added", () => {
     for (const field of ["problem", "solution", "result", "limits", "coverAlt"])
       expect(project[field].trim().length).toBeGreaterThan(0);
   }
+});
+
+it("shows School Management beside Pixi with its own source and scope", () => {
+  setup();
+  expect(screen.getByRole("status")).toHaveTextContent("2 bemutatott projekt");
+  expect(
+    screen.getByRole("link", {
+      name: /School Management — iskolai adminisztráció/,
+    }),
+  ).toHaveAttribute("href", "/portfolio/school-management");
+});
+it("renders School Management without Pixi-specific mobile or test claims", () => {
+  setup("/portfolio/school-management");
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    "School Management",
+  );
+  expect(
+    screen.getByRole("link", { name: "GitHub repository ↗" }),
+  ).toHaveAttribute("href", "https://github.com/Pixidev87/school_management");
+  expect(
+    screen.getByText(/A projektet most nem telepítettük és nem futtattuk/),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/nem az alkalmazás képernyőképe/),
+  ).toBeInTheDocument();
+  expect(screen.queryByText(/19 frontendteszt/)).not.toBeInTheDocument();
+  expect(
+    screen.queryByAltText("A Pixi főoldala 390 pixeles mobilnézetben."),
+  ).not.toBeInTheDocument();
 });

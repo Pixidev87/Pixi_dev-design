@@ -1570,3 +1570,32 @@ footer {
     gap: 24px;
   }
 }
+
+.case-cover-caption {
+  color: var(--paper);
+  font-size: 0.75rem;
+  margin: 18px 0 0;
+}
+.case-source-section {
+  background: var(--paper-deep);
+}
+.case-source-section p {
+  color: var(--muted);
+}
+.case-module-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+  margin: 30px 0 40px;
+}
+.case-module-list li {
+  border-top: 1px solid var(--border);
+  padding: 16px 0;
+}
+@media (max-width: 760px) {
+  .case-module-list {
+    grid-template-columns: 1fr;
+  }
+}
