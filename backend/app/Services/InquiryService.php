@@ -10,11 +10,14 @@ use Illuminate\Support\Facades\Mail;
 
 class InquiryService
 {
-    /** @param array{name: string, email: string, description: string} $data */
+    /** @param array{name: string, email: string, description: string, demo_session_id?: int|null} $data */
     public function create(array $data): Inquiry
     {
         return DB::transaction(function () use ($data): Inquiry {
-            $inquiry = new Inquiry($data);
+            $inquiry = new Inquiry([
+                'name' => $data['name'], 'email' => $data['email'], 'description' => $data['description'],
+            ]);
+            $inquiry->demo_session_id = $data['demo_session_id'] ?? null;
             $inquiry->status = InquiryStatus::New;
             $inquiry->save();
 

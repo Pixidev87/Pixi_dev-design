@@ -103,7 +103,7 @@ A kérés útja: `routes/api.php` → `StatusController` → `StatusService` →
 
 ## Ajánlatkérő backend (3. szakasz)
 
-A `POST /api/v1/inquiries` nyilvános végpont kötelező mezői: `name` (legfeljebb 150 karakter), `email` (RFC szerinti e-mail, legfeljebb 254 karakter), `description` (legfeljebb 5000 karakter). A szövegek szélén lévő szóközöket a Laravel eltávolítja. Az állapotot a szerver `new` értékre állítja; a kliens által megadott állapot és a még nem támogatott demóazonosító 422-es hibát ad. A `demo_session_id` nullable mező előkészítés: a külső kulcs és a tulajdonos ellenőrzése a demó szakaszában készül el.
+A `POST /api/v1/inquiries` nyilvános végpont kötelező mezői: `name` (legfeljebb 150 karakter), `email` (RFC szerinti e-mail, legfeljebb 254 karakter), `description` (legfeljebb 5000 karakter). A szövegek szélén lévő szóközöket a Laravel eltávolítja. Az állapotot a szerver `new` értékre állítja; a kliens által megadott állapot 422-es hibát ad. Az 5. szakasztól opcionális `demo_session_id` is fogadható: ehhez megerősített e-mail, bearer token és a fiókhoz tartozó demóeredmény szükséges. Külső kulcs védi a kapcsolatot.
 
 ```bash
 cd backend
@@ -159,7 +159,7 @@ Laravel Sanctum 4.4.0 biztosítja a bearer tokenes API-hitelesítést. A `backen
 | `POST /api/v1/email/verification-notification` | bearer token | 200; nem megerősített felhasználónak új levél |
 | `GET /api/v1/email/verify/{user}/{hash}` | a levélben kapott, 60 percig érvényes aláírt URL | 200; megerősítés, ismételt érvényes kattintás is sikeres |
 
-A név kötelező (max. 150 karakter); az e-mailt kisbetűsítjük és egyedivé tesszük. A jelszó legalább 12 karakter, a jelenlegi bcrypt beállítás miatt legfeljebb 72 bájt; nulla bájt nem fogadható el. A jelszó tárolás előtt hashelődik. A `demo_uses_left` és az `email_verified_at` szerveroldali mezők, kliensoldali felülírásuk tiltott. Új fiók pontosan 5 felhasználást kap; a belépés ezt nem tölti újra. A tényleges kvótafogyasztás az 5. szakasz feladata.
+A név kötelező (max. 150 karakter); az e-mailt kisbetűsítjük és egyedivé tesszük. A jelszó legalább 12 karakter, a jelenlegi bcrypt beállítás miatt legfeljebb 72 bájt; nulla bájt nem fogadható el. A jelszó tárolás előtt hashelődik. A `demo_uses_left` és az `email_verified_at` szerveroldali mezők, kliensoldali felülírásuk tiltott. Új fiók pontosan 5 felhasználást kap; a belépés ezt nem tölti újra. Az atomi kvótafogyasztást az 5. szakasz valósítja meg (lásd alább).
 
 A regisztráció a felhasználót és a megerősítő levél adatbázisos queue-feladatát egy tranzakcióban menti. A magyar levél a meglévő `inquiry-mail` soron és `inquiry-worker` szolgáltatáson jut el a Mailpitbe. A helyes `APP_URL` szükséges az aláírt URL-hez (helyben `http://localhost:8082`). A link birtoklása igazolja a postaládához hozzáférést: böngészőből, bearer token nélkül nyitható meg, és nem jelentkezteti be a felhasználót. Lejárt vagy módosított link 403; régi e-mailhez készült link e-mail-változás után nem használható.
 
@@ -170,3 +170,47 @@ Kéréskorlátok: regisztráció 5/perc/IP; belépés 5/perc/e-mail+IP és 20/pe
 2026-11-16: **52 teszt, 306 assertion sikeres**, Pint, Compose és whitespace-ellenőrzés rendben. A tesztek a külön `testing` MySQL-adatbázison futnak. A regisztráció–Mailpit–megerősítés–védett végpont–kijelentkezés folyamatot az Nginxen keresztül is igazoltuk. A megjelölt helyi tesztfelhasználó #1 megmaradt; a teszt végén a tokenjét visszavontuk. Valódi SMTP és frontend továbbra is későbbi feladat.
 
 A folyamatnapló és a HTML-terv verziózott másolatai a `docs/` mappába kerülnek. A `portfolio/` mappában található, eddig használt példányokat ugyanazzal a tartalommal tartjuk naprakészen.
+
+## Demó és 5 használatos keret (5. szakasz)
+
+**Kód és automatikus tesztek kész; az élő Claude-próbát a felhasználó kérésére későbbre hagytuk.** Az Anthropic-kulcs és a modell még nincs beállítva. Ilyenkor a demó 503-at ad, a keret változatlan. Fizetős próbahívás nem történt; az AI-válaszokat kizárólag a tesztek szimulálják, nincs helyi ál-eredményt kiadó alkalmazásmód.
+
+A backend könyvtárában:
+
+```bash
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan test
+```
+
+| Végpont | Feltételek | Eredmény |
+|---|---|---|
+| `POST /api/v1/demo` | Sanctum bearer token, megerősített e-mail, 10–3000 karakteres `prompt`, UUID `Idempotency-Key` fejléc | Új eredmény: 201; azonos kérés ismétlése: 200 |
+| `GET /api/v1/demo/{id}` | megerősített tulajdonos bearer tokenje | 200; más fiókhoz tartozó/nem létező eredmény: 404 |
+| `POST /api/v1/inquiries` | opcionális `demo_session_id`; ha van, megerősített tulajdonos bearer tokenje kell | az ajánlathoz mentett demókapcsolat |
+
+Példakérés az élő integráció későbbi bekapcsolása után (szolgáltatói költséggel és siker esetén egy demóhasználat fogyasztásával):
+
+```http
+POST /api/v1/demo
+Authorization: Bearer <token>
+Idempotency-Key: 38f44f36-3d7b-4adf-a7ad-2a7bec93d0fd
+Content-Type: application/json
+
+{"prompt":"Sok telefonos időpontegyeztetésem van, ezt szeretném egyszerűsíteni."}
+```
+
+A válasz `data` része: `id`, `prompt`, `result.summary`, `result.recommendation`, `created_at`; POST esetén a `meta.demo_uses_left` a megmaradt keret. Egy felhasználónak összesen 5 sikeres eredmény engedélyezett. A hatodik új kérés 403: `code=demo_quota_exhausted`, ajánlatkérésre irányító üzenettel és `inquiry_url` mezővel. Belépés, napváltás vagy sikertelen kérés nem tölti újra a keretet. A végpont korlátja 10 kérés/perc/fiók.
+
+A `DemoService` a felhasználó MySQL-sorát `lockForUpdate()` zárral védi a szolgáltatói kérés alatt is. Az eredmény mentése és a számláló csökkentése egy tranzakció. Ha a szolgáltatói hívás, a kimenetellenőrzés vagy a mentés hibás, nincs keretfogyasztás. Zárvárakozási időtúllépés/holtpont esetén 503-as, újrapróbálható válasz jár; a tranzakciót automatikusan nem ismételjük meg, hogy ne ismételjünk fizetős hívást.
+
+Az idempotenciakulcs fiókonként egyedi. Sikeresen mentett kérés ugyanazzal a kulccsal és szöveggel visszaolvasható új szolgáltatói hívás és új keretfogyasztás nélkül, nulla megmaradt keretnél is. Azonos kulcs más szöveggel 409. Sikertelen, nem mentett kérés később azonos kulccsal újrapróbálható. Folyamatleállás vagy hálózati hiba esetén az alkalmazás és a külső API között nincs elosztott tranzakció: a szolgáltató feldolgozhat egy olyan hívást is, amelynek eredményét már nem tudtuk menteni. A felhasználói keret ilyenkor változatlan, de szolgáltatói költség keletkezhet.
+
+A Claude-kliens Laravel HTTP-klienssel a fix HTTPS Messages API-t hívja; az API-kulcs csak szerveroldali fejléc. Az API-verzió rögzített (`2023-06-01`), a modell környezeti beállítás. A JSON-sémában `summary` és `recommendation` kötelező; a kész JSON-t külön típus- és hosszellenőrzés is védi. Max. 1024 kimeneti token, 5 másodperc kapcsolódási és 25 másodperc teljes timeout; nincs automatikus HTTP-újrapróbálkozás és átirányításkövetés. Nyers szolgáltatói hibát és kulcsot nem adunk vissza. Félbeszakadt vagy hibás eredmény 502, szolgáltatói/konfigurációs hiba 503.
+
+Hivatalos referenciák: [strukturált JSON-kimenet](https://platform.claude.com/docs/en/build-with-claude/structured-outputs), [API-verziózás](https://platform.claude.com/docs/en/api/versioning).
+
+Az élő próba később: `backend/.env` fájlban `ANTHROPIC_API_KEY` és strukturált kimenetet támogató `ANTHROPIC_MODEL` beállítása, majd `./vendor/bin/sail artisan config:clear`. A kulcsot ne másold a chatbe, frontendbe vagy Gitbe. A `.env.example` csak üres helyőrzőket tartalmaz. A modellhez való hozzáférést és az aktuális díjazást az élő próba előtt ellenőrizni kell.
+
+2026-11-16: **89 teszt, 484 assertion sikeres**, Pint és whitespace-ellenőrzés rendben; a helyi migrációk lefutottak. Valós MySQL-zárakon, hat külön PHP-folyamattal teszteltük az utolsó használatért versenyző kéréseket és az azonos kulcsú párhuzamos ismétlést: mindkettőnél egyetlen szimulált szolgáltatói hívás és egyetlen mentés. Külön teszt igazolja a zárvárakozás lejáratát. Az eredmény-, jogosultsági és ajánlatkapcsolási tesztek is sikeresek.
+
+Nginxen végzett próba: vendégként 401; megerősített helyi #2 tesztfiókkal, hiányzó Claude-konfiguráció mellett 503 és változatlan 5-ös keret. A teszttokent kijelentkezéssel visszavontuk. **Sikeres élő Claude-válasz és annak tartalmi minősége még nincs igazolva.**

@@ -87,7 +87,6 @@ class StoreInquiryTest extends TestCase
             'description too long' => ['description', str_repeat('a', 5001)],
             'array description' => ['description', ['unexpected']],
             'client status' => ['status', 'sent'],
-            'unverified demo' => ['demo_session_id', 1],
         ];
     }
 
