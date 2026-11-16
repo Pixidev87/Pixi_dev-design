@@ -25,7 +25,7 @@
 | 3 | Igényfelmérő űrlap (backend) | Zoli | **kész** | validáció, MySQL-mentés, enum, Resource, tranzakciós levélsor és Mailpit-kézbesítés ellenőrizve |
 | 4 | Regisztráció és e-mail | Zoli | **kész** | Sanctum-token, aláírt megerősítés, újraküldés, kijelentkezés, kezdő 5-ös keret; 52 teszt / 306 assertion |
 | 5 | Demó és 5-használat-keret | Zoli | **kód és tesztek kész; élő próba halasztva** | 89 teszt / 484 assertion; MySQL párhuzamosság, idempotencia, saját demó–ajánlat kapcsolat kész; kulcs/modell nincs beállítva |
-| 6 | React frontend | Zoli | nincs elkezdve | |
+| 6 | React frontend | Zoli | **kész, helyben ellenőrizve** | főoldal, hitelesítés/megerősítés, demófelület és ajánlatkérés; 19 frontendteszt; élő AI-próba továbbra is halasztva |
 | 7 | Portfólió | közösen | nincs elkezdve | |
 | 8 | Minőség és indítás | közösen | nincs elkezdve | |
 
@@ -73,9 +73,9 @@
 
 ## Következő lépés
 
-Az 5. szakasz kódja és automatikus tesztjei elkészültek. Az élő Claude-próbát Zoli kifejezett kérésére későbbre hagytuk: ehhez szerveroldali ANTHROPIC_API_KEY és ANTHROPIC_MODEL beállítás, majd valódi válasz- és tartalmi ellenőrzés szükséges. A teljes 5. szakasz élő integrációs elfogadása ezért még nyitott.
+7. szakasz: saját portfólióanyag és esettanulmányok. Ehhez a valódi projektanyagokat, logót és végleges elérhetőségeket még pótolni kell. A 6. szakasz React felülete helyben elkészült: http://localhost:8082/ . Végleges vizuális jóváhagyás és a 8. szakasz teljes minőségellenőrzése/élesítése még hátravan.
 
-Továbbhaladásként előkészíthető a 6. szakasz: React frontend, a meglévő designanyagokkal és az elkészült API-val. Új szakasz csak felhasználói kérésre indul.
+Az 5. szakasz élő Claude-próbája Zoli kérésére halasztva marad. A React demófelület emiatt jelenleg tájékoztatást mutat és nem indít AI-hívást. Az élő szolgáltatás és a demóeredmény teljes valódi felhasználói útja csak később igazolható. Új szakasz felhasználói kérésre indul.
 
 ## 2026-11-16 – 2. szakasz: tesztek és API-alap
 
@@ -144,3 +144,24 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - Megjelölt helyi próba: felhasználó #2, `pixi-stage5-1794844102806523000@example.test`; a megerősítő levél Mailpitbe érkezett. A próba végén kijelentkeztünk (204), a tokent visszavontuk. Jelszó vagy bearer token nem került fájlba/naplókimenetbe.
 - Git: `c8e2b47` — `feat: add transactional demo quota and Claude integration`, main ágra feltöltve (`156da88..c8e2b47`). A README részletes API-szerződést és üzemeltetési korlátokat tartalmaz.
 - A napló és a HTML-terv helyi példánya és a repository docs/ mappájában lévő verziózott másolata azonos tartalommal frissül. Az 5. szakasz Claude élő-ellenőrzési jelölőnégyzete szándékosan nyitva marad.
+
+## 2026-11-16 – 6. szakasz: React frontend
+
+- Felhasználói engedély: a 6. szakasz megvalósítása; a napló, a HTML-terv és a Git frissítése továbbra is része a munkamenetnek.
+- Önálló frontend/ React + Vite alkalmazás, React Routerrel, központi API-klienssel és memóriában tartott Sanctum bearer tokennel. Ellenőrzött verziók: Node 24.22.1, React 19.3.1, Vite 8.3.8. Lockfájl commitolva, node_modules/dist/.env helyi és kizárt.
+- Főoldal: az elfogadott magazinszerű, mustársárga–petróleum arculat, sötét/világos szakaszok, szolgáltatások, szemléltető koncepció, demóblokk és kapcsolat. Saját CSS-grafikák; nincs kitalált ügyfél, eredményszázalék vagy telefonszám. Végleges kontaktadatok, saját referenciák és a végső designjóváhagyás továbbra is hátravan.
+- Útvonalak: /, /regisztracio, /belepes, /demo, /ajanlat, /megerosites/{user}/{hash}; ismeretlen útvonalhoz saját 404-felület. Mélylinkek közvetlen megnyitása Nginx SPA-fallbackkel működik.
+- Regisztráció/belépés, automatikus belépés regisztráció után, megerősítési kapu, levél-újraküldés, ellenőrzés és kijelentkezés bekötve a valódi API-ra. Gyakori regisztrációs mezőhibák magyar üzenetet kaptak. Függő küldés alatt a gomb letiltott.
+- Új felhasználóbarát megerősítő oldal: a levél frontendcímére kattintva megjelenő gomb az eredeti aláírt API-végpontot hívja. A 60 perces lejárat, aláírás, e-mail-hash ellenőrzés és idempotencia megmaradt; régi közvetlen API-linkek továbbra is működnek lejáratukig.
+- A token nem kerül URL-be, localStorage-ba vagy sessionStorage-ba. Újratöltés/új lap után új belépés kell. A 401 törli a helyi munkamenetet; kijelentkezés szerveroldali visszavonást kér. A helyi tesztfiókból a böngészős próba végén kijelentkeztünk.
+- Demófelület: 5-ös keret megjelenítése; nulla esetén tiltott gomb; szöveges probléma, várakozás, hiba, eredmény és ajánlatba továbbvitel. Új szöveghez új UUID, azonos szöveg sikertelen újrapróbálásához azonos Idempotency-Key. Saját demóeredményből név/e-mail/leírás és demo_session_id előkitöltés.
+- VITE_DEMO_AVAILABLE=false: az élő próba halasztása miatt nincs valódi demóhívás a felületről, helyette tájékoztatás és ajánlatkérési lehetőség. Az előkitöltés és sikeres AI-eredmény felülete komponens- és backendteszttel igazolt, élő Claude-válasszal még nem.
+- Ajánlatküldés vendégként is működik. Mező- és hálózati hibánál a kitöltés az aktuális oldalon megmarad; siker után azonosítós visszajelzés jelenik meg. Oldal-újratöltés után a piszkozat nem őrződik meg.
+- Nginx a frontend/dist buildet olvasási kötettel szolgálja ki a localhost:8082 címen; /api/ és /up Laravelre kerül. Kész helyi használathoz nem kell Vite dev szerver. Fejlesztéshez npm --prefix frontend run dev, port 5174, /api proxyval. Indítás/frissítés és környezeti beállítások a README-ben.
+- Frontend környezeti változók: csak nyilvános VITE_CONTACT_PHONE, HTTPS VITE_BOOKING_URL és VITE_DEMO_AVAILABLE. Titkos API-kulcs kizárólag a backend környezeti fájljában lehet.
+- Ellenőrzés: **19 frontendteszt sikeres; 89 backendteszt / 484 assertion sikeres**. Vite build, Pint, Nginx-szintaxis és git diff whitespace rendben. A Laraveltesztek a külön testing adatbázist használják.
+- Komponenstesztek: vendégkapu, regisztráció és jelszóegyezés, megerősítés/újraküldés, aláírt frontendlink sikeres/lejárt/hiányos esete, API-hibák, letiltott demó, nulla keret, idempotenciakulcs megőrzése újrapróbáláskor, előkitöltött saját ajánlat, duplaküldés tiltása, kijelentkezés.
+- Valódi böngészős próba: főoldal 1280-as asztali és 390-es mobilnézetben; 390-es nézetnél nincs vízszintes túlcsordulás. Mobilos ajánlat #2 (pixi-stage6@example.test) elmentve, visszaigazoló levél beérkezett Mailpitbe. Regisztráció (pixi-stage6-ui@example.test, felhasználó #3), megerősítő levél, megerősítés, 5/5 keret, kikapcsolt demó és kijelentkezés sikeres. A kész megerősítő visszajelző oldalt is végigpróbáltuk. Fizetős AI-hívás nem történt.
+- Képernyőképek: pixi-web/docs/preview/pixi-stage6-desktop.jpg és pixi-web/docs/preview/pixi-stage6-mobile.jpg. A böngészőben a kész helyi főoldal megnyitva maradt.
+- Git: `01901c6` — `feat: add integrated React frontend and email verification pages`, a main ágra feltöltve. A napló és HTML-terv frissítése azonos tartalmú helyi/docs példányokkal követi.
+- A 6. szakasz technikai megvalósítása kész. Az 5. szakasz élő elfogadása, a végleges kontakt-/designanyagok, éles SMTP és a 8. szakasz minőségi/élesítési feladatai még nyitottak.
