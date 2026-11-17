@@ -301,7 +301,7 @@ A felhasználó kérésére a Pixi mellé felvettük a [school_management](https
 
 A bemutató alapja a 2026-11-16-án olvasott [Laravel API-útvonaltérkép](https://github.com/Pixidev87/school_management/blob/main/school-management/routes/api.php), [React útvonaltérkép](https://github.com/Pixidev87/school_management/blob/main/school-management/resources/js/routes/AppRoutes.jsx), valamint a package.json és composer.json. A források diák-, tanár-, osztály-, tantárgy-, jelenléti, órarend-, vizsga-, díj-, könyvtári, közlekedési és értesítési modulokat, React/Bootstrap/React Query felületet, Laravel/Sanctum API-t és egyes műveleteknél szerepkör-ellenőrzést mutatnak. A projektet nem telepítettük és nem futtattuk; nincs új, igazolt tesztfutási vagy éles használati állítás.
 
-Képernyőkép hiányában a `frontend/public/images/school-management.svg` saját, egyértelműen jelölt modultérképe került a kártyára és a részletoldalra. Ez nem az alkalmazás képernyőképe. A közös esettanulmány-sablon projektenként külön forráslinkeket, ellenőrzési megjegyzést, eredménycímet és opcionális mobilképet kezel; így a Pixi-specifikus bizonyítékok nem kerülnek át más projektre.
+A kártyán és a részletoldalon a `frontend/public/images/school-management-showcase.png` szerepel: a felhasználó saját képernyőképeiből AI-val szerkesztett kollázs. Az eredeti SVG modultérkép előzményként megmaradt. A közös esettanulmány-sablon projektenként külön forráslinkeket, ellenőrzési megjegyzést, eredménycímet és opcionális mobilképet kezel; így a Pixi-specifikus bizonyítékok nem kerülnek át más projektre.
 
 Ellenőrzés: **28 frontendteszt sikeres**, Vite build és whitespace rendben. Új tesztek védik a kétprojekt-listát, a kategóriánkénti találatszámot, a School Management saját GitHub-linkjét és a Pixi-specifikus tartalom hiányát az iskolai esettanulmányban. Valódi böngészős listanézet és részletoldal, 390 pixeles mobilnézet túlcsordulás nélkül. Backendváltozás és új backendteszt-futtatás nem történt. Képernyőkép: docs/preview/pixi-school-portfolio.jpg. A végső tartalmi/designjóváhagyás, az élő AI-próba és élesítés továbbra is nyitott.
 
@@ -316,3 +316,11 @@ Ellenőrzés: **28 frontendteszt sikeres**, Vite build és whitespace rendben. �
 - School Management: a /Users/pixidev/Desktop/school/ képei megtekintve; áttekintő, osztályok és jelenlét felhasználásával modern Pixi-arculatú kollázs készült a beépített imagegen eszközzel. Fájl: frontend/public/images/school-management-showcase.png. A korábbi SVG helyett ezt használja a portfólió és a részletoldal. A képaláírás egyértelműen jelzi az AI-val szerkesztett összeállítást; nem állítunk független School Management futtatási vagy üzleti eredményt.
 - Képgenerálási brief: fekvő modern portfóliókollázs, eredeti kék-fehér alkalmazásfelületek; törtfehér háttér, antracit cím, mustár/petrol hangsúlyok; fő áttekintő és két kiegészítő panel. Cím: School Management; alcím: Iskolai adminisztráció egy felületen. Kitalált rekordok és grafikonok nélkül.
 - A 8. szakasz helyi ellenőrzési köre lezárható; teljes élesítési szakasz továbbra is részleges.
+
+## Helyi kiadásellenőrzés
+
+```bash
+bash scripts/check-local.sh
+```
+
+Feltételek és indulási feladatok: [indulási lista](docs/release-checklist.md). A parancs nem indít élesítést.

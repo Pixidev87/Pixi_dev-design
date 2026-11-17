@@ -207,3 +207,11 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - School Management: a /Users/pixidev/Desktop/school/ képei megtekintve; áttekintő, osztályok és jelenlét felhasználásával modern Pixi-arculatú kollázs készült a beépített imagegen eszközzel. Fájl: frontend/public/images/school-management-showcase.png. A korábbi SVG helyett ezt használja a portfólió és a részletoldal. A képaláírás egyértelműen jelzi az AI-val szerkesztett összeállítást; nem állítunk független School Management futtatási vagy üzleti eredményt.
 - Képgenerálási brief: fekvő modern portfóliókollázs, eredeti kék-fehér alkalmazásfelületek; törtfehér háttér, antracit cím, mustár/petrol hangsúlyok; fő áttekintő és két kiegészítő panel. Cím: School Management; alcím: Iskolai adminisztráció egy felületen. Kitalált rekordok és grafikonok nélkül.
 - A 8. szakasz helyi ellenőrzési köre lezárható; teljes élesítési szakasz továbbra is részleges.
+
+## 2026-11-17 – Megismételhető ellenőrzés és indulási lista
+
+- Új scripts/check-local.sh: frontendtesztek és build, backendtesztek, whitespace és a rendelkezésre álló külső dokumentumpéldányok egyezése; az első hibánál leáll. Kizárólag helyi használatra, nem telepít és nem élesít.
+- Új docs/release-checklist.md: domain/tárhely, végső tartalom, kontaktadatok, adatkezelés, SMTP, proxy, mentés/visszaállítás, queue és éles végigpróba konkrét elfogadási feltételekkel. Élő AI továbbra is halasztva.
+- A README School Management-borítóra vonatkozó aktuális leírása a valóban használt kollázsra frissítve. A korábbi ellenőrzési számok történeti eredmények.
+- Nyilvános élesítés nem történt. Következő külső döntés: domain/tárhely és a tartalom/design véglegesítése.
+- Az új ellenőrző parancs valóban végigfutott: 50 frontendteszt, 93 backendteszt / 511 assertion, build, whitespace és dokumentumegyezés sikeres. Bash szintaxisellenőrzés rendben.
