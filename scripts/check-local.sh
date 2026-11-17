@@ -4,6 +4,8 @@ repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_dir"
 npm --prefix frontend test -- --reporter=dot
 npm --prefix frontend run build
+npm --prefix frontend run build:brochure
+python3 scripts/package-brochure.py
 (
   cd backend
   ./vendor/bin/sail artisan test

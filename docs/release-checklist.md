@@ -1,6 +1,6 @@
 # Pixi – indulási lista
 
-Frissítve: 2026-11-17. Jelenlegi kör: helyi előkészítés. Nyilvános telepítés és fizetős AI-hívás nincs engedélyezve ebben a körben.
+Frissítve: 2026-11-17. Jelenlegi kör: a felhasználó a pixidevdesign.nhely.hu webcímre, a pixidevdesign ingyenes Nethely-tárhelyre kéri a feltöltést. Külön jóváhagyta a statikus bemutatóváltozatot, belépés és online ajánlatküldés nélkül. Fizetős AI-hívás továbbra is halasztva. Feltöltési útmutató: [Nethely bemutató](nethely-bemutato-feltoltes.md).
 
 ## Megismételhető helyi ellenőrzés
 
@@ -10,13 +10,13 @@ A repository gyökeréből, telepített frontendfüggőségekkel és futó helyi
 bash scripts/check-local.sh
 ```
 
-Az első hibánál leáll. Sorrend: frontendtesztek, frontend build, backendtesztek, whitespace, valamint a külső napló-/HTML-példányok egyezése, ha azok jelen vannak. A backendtesztek a projekt tesztadatbázisát használják; ezt a parancsot helyi fejlesztői környezetben futtasd. Nem telepít függőséget, nem indít szolgáltatást és nem végez éles migrációt.
+Az első hibánál leáll. Sorrend: frontendtesztek, teljes és bemutató frontend build, bemutató-ZIP, backendtesztek, whitespace, valamint a külső napló-/HTML-példányok egyezése, ha azok jelen vannak. A backendtesztek a projekt tesztadatbázisát használják; ezt a parancsot helyi fejlesztői környezetben futtasd. Nem telepít függőséget, nem indít szolgáltatást és nem végez éles migrációt.
 
 ## Indulás előtt eldöntendő
 
 | Feladat | Jelenlegi állapot | Elfogadási feltétel |
 | --- | --- | --- |
-| Domain és tárhely | Nincs kiválasztva | Végleges HTTPS cím, futtatási környezet és hozzáférés ismert |
+| Domain és tárhely | pixidevdesign.nhely.hu / pixidevdesign ingyenes Nethely; statikus bemutató választva | Feltöltés és élő végigpróba még szükséges; teljes rendszerhez HTTPS/worker megoldás is kell |
 | Tartalom és design | Végső jóváhagyás nyitott | Főoldal, két esettanulmány, mobilnézet és kollázs elfogadva |
 | Kontaktadatok | Nem véglegesek | Telefon, foglalási link és elérhetőségek ellenőrizve |
 | Adatkezelési tájékoztatás | Indulás előtt rendezendő | Ajánlatkérés és fiókadatok tárolási/törlési folyamata meghatározva, megfelelő tájékoztatás elérhető |

@@ -28,7 +28,7 @@ const services = [
 const phone = import.meta.env.VITE_CONTACT_PHONE || "";
 const phoneNumber = phone.replace(/[^+\d]/g, "");
 const booking = import.meta.env.VITE_BOOKING_URL || "";
-export default function Home() {
+export default function Home({ brochure = false }) {
   return (
     <>
       <section className="hero">
@@ -49,12 +49,20 @@ export default function Home() {
               azzal, ami működik.
             </p>
             <div className="button-row">
-              <Link className="button primary" to="/ajanlat">
-                Beszéljünk az ötletedről <span aria-hidden="true">↗</span>
+              <Link
+                className="button primary"
+                to={brochure ? "/portfolio" : "/ajanlat"}
+              >
+                {brochure
+                  ? "Nézd meg a munkáinkat"
+                  : "Beszéljünk az ötletedről"}{" "}
+                <span aria-hidden="true">↗</span>
               </Link>
-              <Link className="text-link light-link" to="/demo">
-                Kipróbálom az AI-demót <span aria-hidden="true">→</span>
-              </Link>
+              {!brochure && (
+                <Link className="text-link light-link" to="/demo">
+                  Kipróbálom az AI-demót <span aria-hidden="true">→</span>
+                </Link>
+              )}
             </div>
           </div>
           <div
@@ -175,40 +183,45 @@ export default function Home() {
               Szemléltető példa, nem ügyfélreferencia. A saját
               megvalósításainkat fent, a munkáink között mutatjuk be.
             </p>
-            <Link className="text-link" to="/demo">
-              Nézzük meg a te problémádat <span aria-hidden="true">↗</span>
+            <Link className="text-link" to={brochure ? "/portfolio" : "/demo"}>
+              {brochure
+                ? "Fedezd fel a munkáinkat"
+                : "Nézzük meg a te problémádat"}{" "}
+              <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>
       </section>
-      <section className="section demo-teaser">
-        <div className="container teaser-grid">
-          <div className="large-five" aria-hidden="true">
-            5<span>lehetőség</span>
+      {!brochure && (
+        <section className="section demo-teaser">
+          <div className="container teaser-grid">
+            <div className="large-five" aria-hidden="true">
+              5<span>lehetőség</span>
+            </div>
+            <div>
+              <p className="eyebrow light">03 / PRÓBÁLJUK KI</p>
+              <h2>
+                Írd le, ami
+                <br />
+                most <em>időt vesz el.</em>
+              </h2>
+              <p>
+                Az AI-demó rövid összefoglalót és megoldási irányt ad.
+                Regisztráció és e-mail-megerősítés után összesen öt alkalommal
+                próbálhatod ki.
+              </p>
+              <p className="availability">
+                {demoAvailable
+                  ? "Öt lehetőség, hogy megtaláld az első lépést."
+                  : "Az AI-demó hamarosan elérhető. Ajánlatot már most kérhetsz."}
+              </p>
+              <Link className="button primary" to="/demo">
+                Megnézem a demót <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
           </div>
-          <div>
-            <p className="eyebrow light">03 / PRÓBÁLJUK KI</p>
-            <h2>
-              Írd le, ami
-              <br />
-              most <em>időt vesz el.</em>
-            </h2>
-            <p>
-              Az AI-demó rövid összefoglalót és megoldási irányt ad.
-              Regisztráció és e-mail-megerősítés után összesen öt alkalommal
-              próbálhatod ki.
-            </p>
-            <p className="availability">
-              {demoAvailable
-                ? "Öt lehetőség, hogy megtaláld az első lépést."
-                : "Az AI-demó hamarosan elérhető. Ajánlatot már most kérhetsz."}
-            </p>
-            <Link className="button primary" to="/demo">
-              Megnézem a demót <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
       <section className="section contact-section" id="kapcsolat">
         <div className="container contact-grid">
           <div>
@@ -218,9 +231,11 @@ export default function Home() {
               <br />
               <span className="petrol">Adjunk neki formát.</span>
             </h2>
-            <Link className="button dark" to="/ajanlat">
-              Ajánlatot kérek <span aria-hidden="true">↗</span>
-            </Link>
+            {!brochure && (
+              <Link className="button dark" to="/ajanlat">
+                Ajánlatot kérek <span aria-hidden="true">↗</span>
+              </Link>
+            )}
           </div>
           <div className="contact-details">
             <div>
@@ -231,16 +246,18 @@ export default function Home() {
                 <p>Telefonszám hamarosan.</p>
               )}
             </div>
-            <div>
-              <span>IDŐPONTEGYEZTETÉS</span>
-              {booking.startsWith("https://") ? (
-                <a href={booking} target="_blank" rel="noreferrer">
-                  Időpontot foglalok ↗
-                </a>
-              ) : (
-                <Link to="/ajanlat">Egyeztessünk írásban ↗</Link>
-              )}
-            </div>
+            {!brochure && (
+              <div>
+                <span>IDŐPONTEGYEZTETÉS</span>
+                {booking.startsWith("https://") ? (
+                  <a href={booking} target="_blank" rel="noreferrer">
+                    Időpontot foglalok ↗
+                  </a>
+                ) : (
+                  <Link to="/ajanlat">Egyeztessünk írásban ↗</Link>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>

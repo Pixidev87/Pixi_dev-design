@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { projects } from "../data/portfolio";
 
-export default function CaseStudy() {
+export default function CaseStudy({ brochure = false }) {
   const { slug } = useParams();
   const project = projects.find((item) => item.slug === slug);
   useEffect(() => {
@@ -154,8 +154,11 @@ export default function CaseStudy() {
             <p className="eyebrow">A KÖVETKEZŐ TÖRTÉNET LEHET A TIÉD</p>
             <h2>Van egy hasonló ötleted?</h2>
           </div>
-          <Link className="button dark" to="/ajanlat">
-            Beszéljünk róla ↗
+          <Link
+            className="button dark"
+            to={brochure ? "/#kapcsolat" : "/ajanlat"}
+          >
+            {brochure ? "Kapcsolat ↗" : "Beszéljünk róla ↗"}
           </Link>
         </div>
       </section>

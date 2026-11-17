@@ -324,3 +324,14 @@ bash scripts/check-local.sh
 ```
 
 Feltételek és indulási feladatok: [indulási lista](docs/release-checklist.md). A parancs nem indít élesítést.
+
+## Nethely bemutatóváltozat (2026-11-17)
+
+Felhasználói cél: pixidevdesign.nhely.hu, pixidevdesign ingyenes tárhely. Külön jóváhagyott statikus változat, belépés, regisztráció, AI-demó és online ajánlatküldés nélkül. A teljes alkalmazás külön továbbra is megmarad.
+
+```bash
+npm --prefix frontend run build:brochure
+python3 scripts/package-brochure.py
+```
+
+Kimenet: frontend/dist-brochure és artifacts/pixidevdesign-nethely-bemutato.zip. Az artifacts és a két dist mappa Gitből kizárt; az újraépíthető források és csomagoló verziókövetettek. [Feltöltési útmutató és korlátok](docs/nethely-bemutato-feltoltes.md). A tényleges feltöltés még nem történt meg, a tárhelyfiók nem hozzáférhető az asszisztens számára.

@@ -215,3 +215,14 @@ A kezdeti automatikus elutasítás után Zoli kifejezetten engedélyezte a commi
 - A README School Management-borítóra vonatkozó aktuális leírása a valóban használt kollázsra frissítve. A korábbi ellenőrzési számok történeti eredmények.
 - Nyilvános élesítés nem történt. Következő külső döntés: domain/tárhely és a tartalom/design véglegesítése.
 - Az új ellenőrző parancs valóban végigfutott: 50 frontendteszt, 93 backendteszt / 511 assertion, build, whitespace és dokumentumegyezés sikeres. Bash szintaxisellenőrzés rendben.
+
+## 2026-11-17 – Nethely bemutatóváltozat
+
+- Felhasználói cél: pixidevdesign.nhely.hu; tárhely: pixidevdesign, ingyenes Nethely. A szolgáltató ingyenes csomagleírásában nincs cron/SSH és az ingyenes domainhez ingyenes SSL. A felhasználó ezért külön a belépés és online ajánlatküldés nélküli bemutatót választotta.
+- Külön BrochureApp belépési pont és build: npm --prefix frontend run build:brochure. Megmarad a főoldal, szolgáltatások és mindkét esettanulmány; a teljes alkalmazás normál buildje változatlanul külön készül. A bemutató nem importál AuthProvidert vagy API-modult.
+- Új csomagoló: scripts/package-brochure.py; ZIP és SHA256 az artifacts/ mappában. Csak statikus build és célzott Apache .htaccess, API- és fiókútvonalak tiltásával; nincs backend, adatbázis, .env vagy titkos kulcs a csomagban. A ZIP nem kerül Gitbe, újraépíthető.
+- 58 frontendteszt sikeres, beleértve az új bemutató útvonalait, tiltott funkcióit, API-kérés nélküli navigációját és Escape-fókuszát. Mindkét Vite build sikeres. Az első új tesztfutásban két tesztcélzás a dekoratív, aria-hidden nyilat is beleértette; ezek hozzáférhető névre pontosítva, az egész csomag újra zöld.
+- Útmutató: docs/nethely-bemutato-feltoltes.md; az indulási lista és README frissítve. A scripts/check-local.sh ellenőrzés a bemutató buildjét és csomagolását is futtatja.
+- Tényleges feltöltés nem történt: a saját Chrome vezérléséhez nincs hozzáférés, a beépített Nethely-böngésző IP-tiltási figyelmeztetést mutatott, majd a böngészőeszköz megszakadt. A fiók dokumentumgyökere és a publikus működés nem igazolt. Jelszót nem kértünk chatben.
+- Helyi Apache 2.4 próba az elkészült ZIP-ből: 4 fő-/portfólióútvonal és minden csomagolt publikus fájl 200; 8 tiltott/hiányzó útvonal 404 vagy várt 403; CSP és nosniff fejlécek rendben. Az ideiglenes tesztkonténer leállítva. Ez nem a Nethely éles konfigurációjának igazolása.
+- A bővített scripts/check-local.sh végső futása is sikeres: 58 frontendteszt, 93 backendteszt / 511 assertion, teljes és bemutató build, ZIP-csomagolás, whitespace és dokumentumegyezés.
